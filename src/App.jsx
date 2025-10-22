@@ -18,6 +18,11 @@ import Home from './components/home/Home.jsx';
 import NavigationMenu from './components/header/NavigationMenu.jsx';
 import { selectToken } from './features/users/UserSlice.jsx';
 
+// 🔹 Importamos la nueva página de perfil
+import Profile from './pages/Profile.jsx';
+// ✅ NUEVA IMPORTACIÓN
+import EditProfile from './pages/EditProfile.jsx';
+
 function Layout({ children }) {
   const location = useLocation();
   const token = useSelector(selectToken);
@@ -48,6 +53,7 @@ function App() {
     <Router>
       <Layout>
         <Routes>
+          {/* 🔹 Rutas públicas */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/error" element={<ErrorPage />} />
@@ -58,21 +64,25 @@ function App() {
           <Route path="/car-photo" element={<CarPhoto />} />
           <Route path="/soat-photo" element={<SoatPhoto />} />
 
-
+          {/* 🔹 Página principal */}
           <Route path="/home" element={<Home />} />
+
+          {/* 🔹 Nueva ruta: perfil del usuario */}
+          <Route path="/profile" element={<Profile />} />
+          {/* ✅ NUEVA RUTA: editar perfil */}
+          <Route path="/edit-profile" element={<EditProfile />} />
+
+          {/* 🔹 Rutas protegidas o de navegación */}
           <Route path="/" element={isAuthenticated ? <Navigate to="/home" /> : <Login />} />
           <Route path="/home" element={isAuthenticated ? <Home /> : <Navigate to="/" />} />
           <Route path="/reserved-trips" element={isAuthenticated ? <ReservedTrips /> : <Navigate to="/" />} />
           <Route path="/created-trips" element={isAuthenticated ? <CreatedTrips /> : <Navigate to="/" />} />
           <Route path="/create-trip" element={isAuthenticated ? <CreateTrip /> : <Navigate to="/" />} />
           <Route path="/navigation-menu" element={isAuthenticated ? <NavigationMenu /> : <Navigate to="/" />} />
-      
-      </Routes>
+        </Routes>
       </Layout>
     </Router>
-    
   );
 }
 
 export default App;
-

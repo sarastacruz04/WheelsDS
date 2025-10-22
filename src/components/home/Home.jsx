@@ -5,31 +5,100 @@ import TripCard from "../trips/TripCard.jsx";
 import { useDriver } from "../../contexts/DriverContext.jsx";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
 import { faCar } from '@fortawesome/free-solid-svg-icons';
-// Asume que los estilos comunes (Title, Text, etc.) están disponibles
+import logo from '../../assets/Logo.png';
+import profilePhoto from '../../assets/ProfilePhoto.png';
+import { useNavigate } from 'react-router-dom'; // ✅ IMPORTACIÓN AÑADIDA
 
 // --- Estilos de la Página ---
-
 const HomeContainer = styled.div`
     padding: 20px 40px;
-    background-color: #f0f4f7; /* Un fondo gris claro para el contenido */
+    background-color: #f0f4f7;
     min-height: 100vh;
-    flex-grow: 1; /* Para que ocupe el espacio restante junto al Header lateral si existe */
+    flex-grow: 1;
 
     @media (max-width: 768px) {
         padding: 20px;
-        padding-bottom: 80px; /* Espacio para la barra de navegación inferior */
+        padding-bottom: 80px;
     }
+`;
+
+const HeaderContainer = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-top: 20px;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 10px;
+    }
+`;
+
+const LeftSection = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 12px;
+`;
+
+const Logo = styled.img`
+    height: 45px;
+    cursor: pointer;
 `;
 
 const Greeting = styled.h2`
     color: ${colors.text};
     font-weight: 600;
-    margin-bottom: 20px;
-    padding-top: 20px;
+    margin: 0;
+`;
+
+const ProfileContainer = styled.div`
+    position: relative;
+`;
+
+const ProfileImage = styled.img`
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid ${colors.details};
+    transition: transform 0.2s;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+`;
+
+const DropdownMenu = styled.div`
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: ${colors.white};
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    width: 150px;
+    display: ${({ open }) => (open ? "block" : "none")};
+    z-index: 10;
+`;
+
+const DropdownItem = styled.div`
+    padding: 10px;
+    cursor: pointer;
+    color: ${colors.text};
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+
+    &:hover {
+        background-color: ${colors.background};
+    }
+
+    &:last-child {
+        border-bottom: none;
+    }
 `;
 
 const SearchBarContainer = styled.div`
-    background-color: #dbe4eb; /* Fondo gris/azul claro para la barra de búsqueda */
+    background-color: #dbe4eb;
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 30px;
@@ -56,11 +125,11 @@ const SearchInput = styled.input`
     padding: 10px 15px;
     border: 1px solid ${colors.details};
     border-radius: 8px;
-    flex-grow: 2; /* Más ancho que los selectores */
+    flex-grow: 2;
 `;
 
 const ActionButton = styled.button`
-    background-color: ${colors.primary}; /* O el color que uses para botones principales */
+    background-color: ${colors.primary};
     color: ${colors.white};
     border: none;
     cursor: pointer;
@@ -70,81 +139,100 @@ const ActionButton = styled.button`
     transition: background-color 0.3s;
 
     &:hover {
-        background-color: #4a5d72; /* Un tono un poco más oscuro */
+        background-color: #4a5d72;
     }
 `;
 
 const TripCardGrid = styled.div`
     display: flex;
     flex-wrap: wrap;
-    gap: 3%; /* Espacio entre las tarjetas */
-    justify-content: flex-start; /* Alinea al inicio */
+    gap: 3%;
+    justify-content: flex-start;
 `;
 
-// --- Datos Ficticios (Reemplazar con tu API) ---
-
+// --- Datos Ficticios ---
 const mockTrips = [
     { id: 1, sector: "Colina", conductor: "Miguel Ordoñez", desde: "Calle 153", para: "Universidad", horaSalida: "7:30 AM", valor: "$10.000", cupos: 3 },
     { id: 2, sector: "Calle 116", conductor: "Sandra Torres", desde: "Carrera 15", para: "Universidad", horaSalida: "6:45 AM", valor: "$8.000", cupos: 2 },
     { id: 3, sector: "Samaria Chía", conductor: "Nicolás Cruz", desde: "Chía Centro", para: "Universidad", horaSalida: "6:00 AM", valor: "$15.000", cupos: 1 },
     { id: 4, sector: "Huertas Cajicá", conductor: "Sara Mora", desde: "Cajicá", para: "Universidad", horaSalida: "6:15 AM", valor: "$18.000", cupos: 4 },
-    // Más datos para simular un scroll
     { id: 5, sector: "Cedritos", conductor: "Luisa Fernández", desde: "Calle 140", para: "Universidad", horaSalida: "7:10 AM", valor: "$9.000", cupos: 3 },
     { id: 6, sector: "Rosales", conductor: "Andrés Gutiérrez", desde: "Calle 72", para: "Universidad", horaSalida: "7:00 AM", valor: "$12.000", cupos: 2 },
 ];
 
-
 function Home() {
-    const { isDriver } = useDriver(); // Para mostrar contenido diferente si es necesario
-    const [userName, setUserName] = useState("Susana"); // Estado ficticio del nombre
+    const { isDriver } = useDriver();
+    const [userName, setUserName] = useState("Susana");
+    const [menuOpen, setMenuOpen] = useState(false);
+    const navigate = useNavigate(); // ✅ Hook de navegación
 
-    // Lógica para manejar la reserva (simulación)
     const handleReserve = (tripId) => {
         console.log(`Intentando reservar viaje con ID: ${tripId}`);
         alert(`Has intentado reservar un puesto en el viaje #${tripId}.`);
-        // **AQUÍ IRÍA LA LLAMADA A TU API PARA RESERVAR**
     };
 
-    // Lógica para obtener el nombre del usuario (idealmente desde Redux o API)
     useEffect(() => {
-        // Ejemplo de obtener datos del usuario logueado
-        // **REEMPLAZAR con la lógica de fetchProfileData de Header2.jsx**
-        // setUserName(data.name); 
-    }, []); 
+        const storedName = localStorage.getItem("userName");
+        if (storedName) setUserName(storedName);
+    }, []);
+
+    // 🆕 NUEVO: Obtener el nombre real del usuario desde localStorage
+    useEffect(() => {
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        if (storedUser && storedUser.nombre) {
+            setUserName(`${storedUser.nombre} ${storedUser.apellido || ""}`);
+        }
+    }, []);
 
     return (
         <HomeContainer>
-            {/* El saludo de tu diseño */}
-            <Greeting>¡Buen viaje {userName}!</Greeting> 
+            {/* 🔹 Header con logo + saludo + foto de perfil */}
+            <HeaderContainer>
+                <LeftSection>
+                    <Logo src={logo} alt="Campus GO Logo" />
+                    <Greeting>¡Buen viaje {userName || "Pasajero"}!</Greeting>
+                </LeftSection>
 
-            {/* --- Barra de Búsqueda y Filtros --- */}
+                {/* 🔹 Menú desplegable del perfil */}
+                <ProfileContainer>
+                    <ProfileImage 
+                        src={profilePhoto} 
+                        alt="Foto de perfil"
+                        onClick={() => setMenuOpen(!menuOpen)}
+                    />
+                    <DropdownMenu open={menuOpen}>
+                        <DropdownItem onClick={() => navigate('/profile')}>Ver perfil</DropdownItem>
+                        {/* ✅ NUEVO: Ir a editar perfil */}
+                        <DropdownItem onClick={() => navigate('/edit-profile')}>Editar datos</DropdownItem>
+                    </DropdownMenu>
+                </ProfileContainer>
+            </HeaderContainer>
+
+            {/* 🔹 Barra de búsqueda */}
             <SearchBarContainer>
-                {/* Selector de Sectores */}
                 <Selector>
                     <option value="">Sectores</option>
                     <option value="Colina">Colina</option>
                     <option value="Calle 116">Calle 116</option>
-                    <option value="Chia">Samaria Chía</option>
+                    <option value="Samaria Chía">Samaria Chía</option>
+                    <option value="Huertas Cajicá">Huertas Cajicá</option>
                 </Selector>
 
-                {/* Input de cantidad de puestos */}
-                <SearchInput 
-                    type="number" 
-                    placeholder="Cantidad de puestos disponibles" 
-                    min="1" 
+                <SearchInput
+                    type="number"
+                    placeholder="Cantidad de puestos disponibles"
+                    min="1"
                 />
 
-                {/* Botón de Búsqueda (Puedes añadir un icono de lupa aquí) */}
-                <ActionButton style={{ alignSelf: 'initial', margin: 0, padding: '10px 15px', borderRadius: '8px' }}>
-                    <FontAwesomeIcon icon={faCar} /> 
-                    {/* Botón funcional de búsqueda. Ajusta el estilo si lo necesitas más ancho. */}
+                <ActionButton>
+                    <FontAwesomeIcon icon={faCar} />
                 </ActionButton>
             </SearchBarContainer>
 
-            {/* --- Grid de Tarjetas de Viaje --- */}
+            {/* 🔹 Grid de tarjetas */}
             <TripCardGrid>
-                {mockTrips.map(trip => (
-                    <TripCard 
+                {mockTrips.map((trip) => (
+                    <TripCard
                         key={trip.id}
                         sector={trip.sector}
                         conductor={trip.conductor}
@@ -157,10 +245,18 @@ function Home() {
                     />
                 ))}
             </TripCardGrid>
-            
-            {/* Si estás en modo conductor, aquí mostrarías un contenido diferente, por ejemplo: */}
-            {isDriver && <p style={{color: colors.details, textAlign: 'center', marginTop: '30px'}}>Estás en modo Conductor. Tus viajes creados están en "Viajes Creados".</p>}
 
+            {isDriver && (
+                <p
+                    style={{
+                        color: colors.details,
+                        textAlign: "center",
+                        marginTop: "30px",
+                    }}
+                >
+                    Estás en modo Conductor. Tus viajes creados están en "Viajes Creados".
+                </p>
+            )}
         </HomeContainer>
     );
 }
