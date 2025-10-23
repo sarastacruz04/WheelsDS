@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import './App.css';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { selectUserRole } from './features/users/UserSlice.jsx';
 
 // Importa las páginas
 import LandingPage from './pages/LandingPage.jsx';  
@@ -14,12 +15,14 @@ import CarQuestion from './pages/CarQuestion.jsx';
 import RegisterCar from './pages/RegisterCar.jsx';
 import CarPhoto from './pages/CarPhoto.jsx';
 import SoatPhoto from './pages/SoatPhoto.jsx';
-import Home from './components/home/Home.jsx';
+import Home from './components/home/Home.jsx'; //Pasajero Home
+import DriverHome from './components/home/DriverHome.jsx'; // 🛑 Nueva vista de Conductor
+import RoleSwitch from './components/common/RoleSwitch.jsx'; // 🛑 Nuevo componente de rol
 import NavigationMenu from './components/header/NavigationMenu.jsx';
 import { selectToken } from './features/users/UserSlice.jsx';
 import ReservedTravelTittle from './components/home/ReservedTravelTittle.jsx';
 import CurrentTravel from './components/home/CurrentTravel.jsx';
-
+import RoleBasedHome from './components/home/RoleBasedHome.jsx';
 
 // 🔹 Importamos la nueva página de perfil
 import Profile from './pages/Profile.jsx';
@@ -52,6 +55,11 @@ function App() {
   const token = useSelector(selectToken);
   const isAuthenticated = !!token;
 
+  // 🛑 Componente Helper para rutas protegidas
+  const ProtectedRoute = ({ element }) => {
+    return isAuthenticated ? element : <Navigate to="/" />;
+  };
+
   return (
     <Router>
       <Layout>
@@ -68,22 +76,22 @@ function App() {
           <Route path="/soat-photo" element={<SoatPhoto />} />
 
           {/* 🔹 Página principal */}
-          <Route path="/home" element={<Home />} />
+          <Route path="/home" element={<ProtectedRoute element={<RoleBasedHome />} />} />
 
-          {/* 🔹 Nueva ruta: perfil del usuario */}
-          <Route path="/profile" element={<Profile />} />
-          {/* ✅ NUEVA RUTA: editar perfil */}
-          <Route path="/edit-profile" element={<EditProfile />} />
+          {/* Rutas de Perfil */}
+          <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
+          <Route path="/edit-profile" element={<ProtectedRoute element={<EditProfile />} />} />
 
-          {/* 🔹 Rutas protegidas o de navegación */}
-          <Route path="/" element={isAuthenticated ? <Navigate to="/home" /> : <Login />} />
-          <Route path="/home" element={isAuthenticated ? <Home /> : <Navigate to="/" />} />
-          <Route path="/reserved-trips" element={isAuthenticated ? <ReservedTrips /> : <Navigate to="/" />} />
-          <Route path="/created-trips" element={isAuthenticated ? <CreatedTrips /> : <Navigate to="/" />} />
-          <Route path="/create-trip" element={isAuthenticated ? <CreateTrip /> : <Navigate to="/" />} />
-          <Route path="/navigation-menu" element={isAuthenticated ? <NavigationMenu /> : <Navigate to="/" />} />
-          <Route path="/reserved-travelTittle" element={<ReservedTravelTittle />} />
-          <Route path="/current-travel" element={<CurrentTravel />} />
+          {/* Rutas de Menú (Viajes) */}
+          <Route path="/reserved-trips" element={<ProtectedRoute element={<ReservedTrips />} />} />
+          <Route path="/created-trips" element={<ProtectedRoute element={<CreatedTrips />} />} />
+          <Route path="/create-trip" element={<ProtectedRoute element={<CreateTrip />} />} />
+
+          {/* Ruta Catch-all (redirige a /home si está autenticado o a / si no) */}
+          <Route path="*" element={isAuthenticated ? <Navigate to="/home" /> : <Navigate to="/" />} />
+
+
+          
 
           
         </Routes>

@@ -8,6 +8,8 @@ const initialState = {
   token: null,
   photo: null,
   status: 'loading', 
+  role: 'pasajero',
+  hasCar: true,
 };
 
 const userSlice = createSlice({
@@ -33,6 +35,8 @@ const userSlice = createSlice({
       state.token = action.payload.token;
       state.photo = action.payload.photo;
       state.status = 'success';
+      state.role = action.payload.role || 'pasajero';
+      state.hasCar = action.payload.hasCar || false;
     },
     
     clearUser: (state) => {
@@ -42,18 +46,32 @@ const userSlice = createSlice({
       state.name = null;
       state.photo = null;
       state.status = 'loading';
+      state.role = 'pasajero'; //Resetear el rol al cerrar sesión
+      state.hasCar = false;
+    },
+
+    // 🛑 NUEVA ACCIÓN: Para cambiar el rol (pasajero/conductor)
+    setRole: (state, action) => {
+      state.role = action.payload; // Payload será 'pasajero' o 'conductor'
+    },
+
+    // 🛑 NUEVA ACCIÓN: Para simular o actualizar el estado del carro
+    setHasCar: (state, action) => {
+      state.hasCar = action.payload; // Payload será true o false
     },
   },
 });
 
 // Exporta las acciones para que los componentes puedan hacer dispatch(setUserLogin(...))
-export const { setId, setName, setToken, clearUser, setUserLogin } = userSlice.actions;
+export const { setId, setName, setToken, clearUser, setUserLogin, setRole, setHasCar } = userSlice.actions;
 
 // Exporta los selectores para que los componentes puedan leer el estado (ej. useSelector(selectToken))
 export const selectUser = (state) => state.user.id;
 export const selectName = (state) => state.user.name;
 export const selectToken = (state) => state.user.token;
 export const selectPhoto = (state) => state.user.photo;
+export const selectUserRole = (state) => state.user.role;
+export const selectHasCar = (state) => state.user.hasCar;
 
 
 export default userSlice.reducer;

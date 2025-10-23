@@ -70,11 +70,18 @@ export const RightIcons = styled.div`
 export const RoleIcon = styled.div`
     cursor: pointer;
     font-size: 26px;
-    color: ${({ active, isDriver }) => (active ? (isDriver ? colors.primary : colors.third) : colors.details)};
+    
+    // 🛑 AJUSTE: Usar el color primario para el conductor activo y el color de detalle para inactivo.
+    color: ${({ active, isDriver }) => 
+        active 
+            ? (isDriver ? colors.primary : colors.detail) // Color principal para el activo
+            : colors.details}; // Color de detalle para el inactivo
+
     transition: color 0.3s;
     
+    /* El hover puede simplificarse, o puedes mantenerlo como lo tienes */
     &:hover {
-        color: ${({ isDriver }) => (isDriver ? colors.primaryHover : colors.thirdHover)};
+        opacity: 0.8;
     }
 `;
 

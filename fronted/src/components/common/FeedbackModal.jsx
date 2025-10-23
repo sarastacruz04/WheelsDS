@@ -1,4 +1,4 @@
-//REVISAR
+//Sirve para mostrar modales de retroalimentación al usuario con diferentes tipos de mensajes e íconos.
 import React from 'react';
 import PropTypes from 'prop-types';
 import yesIcon from '../../assets/Yes.webp';
@@ -20,20 +20,26 @@ const FeedbackModal = ({ type, message, details, onClose, onConfirm }) => {
       cancelLabel = null;
       break;
     case 'no':
+    case 'error': // 🛑 NUEVO: Usaremos 'error' para el mensaje de carro
       icon = noIcon;
-      confirmLabel = 'Volver a Página Anterior';
-      cancelLabel = null;
+      confirmLabel = 'Aceptar'; // Cambiamos a 'Aceptar' para el error de carro
+      cancelLabel = 'Cancelar'; // Mantenemos 'Cancelar'
       break;
     case 'question':
       icon = questionIcon;
-      confirmLabel = 'Confirmar';
+      confirmLabel = 'Aceptar'; // Usamos 'Aceptar' para la confirmación de rol
       break;
     default:
       icon = yesIcon;
   }
 
+  // Si el tipo es 'error' o 'no', no queremos el botón principal, sino solo el de cerrar/aceptar
+  const showCancelButton = type === 'question' || type === 'no';
+  const showConfirmButton = type === 'question'; // Solo muestra Confirmar en 'question'
+
   return (
     <div style={styles.modalOverlay}>
+      {/* ... (Tu modalContainer y el icono siguen iguales) */}
       <div style={{ ...styles.modalContainer, ...styles[type] }}>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <img src={icon} alt={`${type} icon`} style={styles.modalIcon} />
@@ -41,14 +47,28 @@ const FeedbackModal = ({ type, message, details, onClose, onConfirm }) => {
         <Title>{message}</Title>
         <Text>{details}</Text>
         <div style={styles.buttonContainer}>
-          {type === 'question' ? (
+          
+          {/* Lógica de botones para 'question' (Aceptar y Cancelar) */}
+          {type === 'question' && (
             <>
               <Button text={cancelLabel} onClick={onClose} primary={false} />
               <Button text={confirmLabel} onClick={onConfirm} primary={true} />
             </>
-          ) : (
+          )}
+
+          {/* Lógica de botones para 'no'/'error' (Cancelar y Aceptar) */}
+          {(type === 'no' || type === 'error') && (
+            <>
+              <Button text="Cancelar" onClick={onClose} primary={false} /> {/* El botón secundario es Cancelar */}
+              <Button text="Aceptar" onClick={onClose} primary={true} />  {/* El botón principal es Aceptar, pero ambos cierran en este caso */}
+            </>
+          )}
+
+          {/* Lógica para 'yes' (solo el botón principal) */}
+          {type === 'yes' && (
             <Button text={confirmLabel} onClick={onClose} primary={true} />
           )}
+
         </div>
       </div>
     </div>
@@ -87,6 +107,9 @@ const styles = {
   },
   question: {
     border: `3px solid ${colors.detail}`,
+  }, 
+  error: {
+    border: `3px solid ${colors.third}`, 
   }, // Estilos específicos por tipo
   modalIcon: {
     width: '60px',
@@ -104,7 +127,7 @@ const styles = {
 
 // Tipos para las props
 FeedbackModal.propTypes = {
-  type: PropTypes.oneOf(['yes', 'no', 'question']).isRequired,
+  type: PropTypes.oneOf(['yes', 'no', 'question', 'error']).isRequired,
   message: PropTypes.string.isRequired,
   details: PropTypes.string.isRequired,
   onClose: PropTypes.func.isRequired,
