@@ -5,7 +5,7 @@ import MapComponent from '../common/MapComponent.jsx'; // Asegúrate que la ruta
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'; // Icono de check
 import { useDispatch } from 'react-redux'; // 👈 Importar hook de Redux
-import addReservation from '../features/reservations/ReservationSlice.jsx';
+import { createReservation } from "../../components/trips/ReservationSlice.jsx";
 
 // --- Estilos para la Reserva ---
 
