@@ -17,7 +17,7 @@ import SoatPhoto from './pages/SoatPhoto.jsx';
 import Home from './components/home/Home.jsx';
 import NavigationMenu from './components/header/NavigationMenu.jsx';
 import { selectToken } from './features/users/UserSlice.jsx';
-import ReservedTravel from './components/home/ReservedTravel.jsx';
+import ReservedTravelTittle from './components/home/ReservedTravelTittle.jsx';
 import CurrentTravel from './components/home/CurrentTravel.jsx';
 
 
@@ -82,7 +82,7 @@ function App() {
           <Route path="/created-trips" element={isAuthenticated ? <CreatedTrips /> : <Navigate to="/" />} />
           <Route path="/create-trip" element={isAuthenticated ? <CreateTrip /> : <Navigate to="/" />} />
           <Route path="/navigation-menu" element={isAuthenticated ? <NavigationMenu /> : <Navigate to="/" />} />
-          <Route path="/reserved-travel" element={<ReservedTravel />} />
+          <Route path="/reserved-travelTittle" element={<ReservedTravelTittle />} />
           <Route path="/current-travel" element={<CurrentTravel />} />
 
           

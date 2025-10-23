@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom'; // ✅ IMPORTACIÓN AÑADIDA
 import iconHome from "../../assets/Home.png";
 import iconReservedTravel from "../../assets/ReservedTravel.png";
 import iconCurrentTravel from "../../assets/CurrentTravel.png";
+import ReservedTravel from '../trips/ApiReserveTravel.jsx';
 
 
 // --- Estilos de la Página ---
@@ -260,8 +261,23 @@ function Home() {
     const [sector, setSector] = useState("");
     const [puestos, setPuestos] = useState("");
     const [filteredTrips, setFilteredTrips] = useState(mockTrips);
-    const [activeTab, setActiveTab] = useState("inicio");
+    const [activeTab, setActiveTab] = useState("home");
     const navigate = useNavigate();
+    const [isReserving, setIsReserving] = useState(false);
+    const [selectedTrip, setSelectedTrip] = useState(null);
+
+    // Función que se ejecuta al hacer clic en el botón '+' de la tarjeta
+    const handleReserveStart = (trip) => {
+        setSelectedTrip(trip);
+        setIsReserving(true);
+    };
+
+    // Función para volver al estado inicial (Home) después de terminar la reserva
+    const handleReservationFinish = () => {
+        setIsReserving(false);
+        setSelectedTrip(null);
+        setActiveTab("home"); // Asegura que vuelva a la pestaña de inicio
+    };
 
     //Función para manejar la búsqueda
     const handleSearch = () => {
@@ -280,11 +296,20 @@ function Home() {
     }
   }, []);
 
-
+// Si isReserving es true, renderizamos el componente ReserveTrip
+    if (isReserving && selectedTrip) {
+        return (
+            <HomeContainer>
+                <ReservedTravel
+                    trip={selectedTrip} 
+                    onFinishReservation={handleReservationFinish} 
+                />
+            </HomeContainer>
+        );
+    }
 
 return (
         <HomeContainer>
-            {/* Header */}
             <HeaderContainer>
                 <LeftSection>
                     <Logo src={logo} alt="Campus GO Logo" />
@@ -364,7 +389,7 @@ return (
                         horaSalida={trip.horaSalida}
                         valor={trip.valor}
                         cupos={trip.cupos}
-                        onReserve={() => alert(`Reservaste el viaje #${trip.id}`)}
+                        onReserve={() => handleReserveStart(trip)}
                     />
                     ))}
                 </TripCardGrid>
