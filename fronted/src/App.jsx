@@ -17,6 +17,9 @@ import SoatPhoto from './pages/SoatPhoto.jsx';
 import Home from './components/home/Home.jsx';
 import NavigationMenu from './components/header/NavigationMenu.jsx';
 import { selectToken } from './features/users/UserSlice.jsx';
+import ReservedTravel from './components/home/ReservedTravel.jsx';
+import CurrentTravel from './components/home/CurrentTravel.jsx';
+
 
 // 🔹 Importamos la nueva página de perfil
 import Profile from './pages/Profile.jsx';
@@ -79,6 +82,10 @@ function App() {
           <Route path="/created-trips" element={isAuthenticated ? <CreatedTrips /> : <Navigate to="/" />} />
           <Route path="/create-trip" element={isAuthenticated ? <CreateTrip /> : <Navigate to="/" />} />
           <Route path="/navigation-menu" element={isAuthenticated ? <NavigationMenu /> : <Navigate to="/" />} />
+          <Route path="/reserved-travel" element={<ReservedTravel />} />
+          <Route path="/current-travel" element={<CurrentTravel />} />
+
+          
         </Routes>
       </Layout>
     </Router>

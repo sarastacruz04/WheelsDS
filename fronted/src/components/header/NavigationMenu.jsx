@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faMapMarkerAlt, faRoad, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { AiOutlineCar, AiOutlineUser } from 'react-icons/ai'; 
 import { useDriver } from '../../contexts/DriverContext.jsx';
-import FeedbackModal from '../common/FeedbackModal'; 
+import FeedbackModal from '../common/FeedbackModal.jsx'; 
 import logo from '../../assets/Logo.png'; 
 
 import { 
@@ -17,7 +17,7 @@ import {
     RightIcons, 
     RoleIcon, 
     ProfileIcon 
-} from './NavigationStyle'; 
+} from './NavigationStyle.jsx'; 
 
 function NavigationMenu() {
     const navigate = useNavigate();
