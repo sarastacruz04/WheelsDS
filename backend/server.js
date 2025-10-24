@@ -1,145 +1,40 @@
 import express from 'express';
 import cors from 'cors';
-import fs from 'fs';
-import path from 'path';
 import { fileURLToPath } from 'url';
+import path from 'path';
+import userRoutes from './routes/UserRoutes.js'; // ✅ Añadido
+import carRoutes from './routes/CarRoutes.js';   // ✅ Añadido
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ Configurar CORS para permitir tu frontend desplegado en Vercel
+// ✅ Configurar CORS
 app.use(cors({
   origin: [
-    "https://proyecto-5v76.vercel.app/", // URL de tu frontend
-    "http://localhost:5173"             // para pruebas locales con Vite
+    "https://proyecto-5v76.vercel.app",
+    "http://localhost:5173"
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
-
-// Middleware
 app.use(express.json());
+app.options("*", cors()); // ✅ Preflight OPTIONS
 
-// ES Modules: __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// ✅ Rutas unificadas
+app.use("/api/users", userRoutes);
+app.use("/api/cars", carRoutes);
 
-// Ruta al users.json
-const usersFilePath = path.join(__dirname, 'users.json');
-
-// Leer usuarios
-const readUsers = () => {
-  if (!fs.existsSync(usersFilePath)) return [];
-  const data = fs.readFileSync(usersFilePath, 'utf-8');
-  try {
-    return JSON.parse(data);
-  } catch (err) {
-    console.error('Error al parsear users.json', err);
-    return [];
-  }
-};
-
-// Guardar usuarios
-const saveUsers = (users) => {
-  fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
-};
-
-// ✅ Registro
-app.post('/api/users/register', (req, res) => {
-  const { nombre, apellido, idUniversidad, email, telefono, password } = req.body;
-
-  if (!nombre || !apellido || !email || !password) {
-    return res.status(400).json({ message: 'Faltan campos obligatorios' });
-  }
-
-  const users = readUsers();
-  const existe = users.find(
-    (u) => u.email.trim().toLowerCase() === email.trim().toLowerCase()
-  );
-
-  if (existe) {
-    return res.status(400).json({ message: 'El correo ya está registrado' });
-  }
-
-  const newUser = { nombre, apellido, idUniversidad, email, telefono, password };
-  users.push(newUser);
-  saveUsers(users);
-
-  return res.status(201).json({ message: 'Usuario registrado exitosamente' });
-});
-
-// ✅ Login
-app.post('/api/users/login', (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Faltan campos' });
-  }
-
-  const users = readUsers();
-  const user = users.find(
-    (u) => u.email.trim().toLowerCase() === email.trim().toLowerCase()
-  );
-
-  if (!user || user.password.trim() !== password.trim()) {
-    return res.status(401).json({ message: 'Correo o contraseña incorrectos' });
-  }
-
-  return res.status(200).json({
-    message: 'Login exitoso',
-    user: {
-      nombre: user.nombre,
-      apellido: user.apellido,
-      email: user.email,
-      idUniversidad: user.idUniversidad,
-      telefono: user.telefono
-    }
-  });
-});
-
-// ✅ Obtener datos de usuario por correo
-app.get('/api/users/:email', (req, res) => {
-  const { email } = req.params;
-  const users = readUsers();
-
-  const user = users.find(
-    (u) => u.email.trim().toLowerCase() === email.trim().toLowerCase()
-  );
-
-  if (!user) {
-    return res.status(404).json({ message: 'Usuario no encontrado' });
-  }
-
-  return res.status(200).json(user);
-});
-
-// ✅ Editar datos del usuario
-app.put('/api/users/:email', (req, res) => {
-  const { email } = req.params;
-  const updatedData = req.body;
-
-  const users = readUsers();
-  const index = users.findIndex(
-    (u) => u.email.trim().toLowerCase() === email.trim().toLowerCase()
-  );
-
-  if (index === -1) {
-    return res.status(404).json({ message: 'Usuario no encontrado' });
-  }
-
-  // Actualiza solo los campos enviados
-  users[index] = { ...users[index], ...updatedData };
-  saveUsers(users);
-
-  return res.status(200).json({ message: 'Usuario actualizado correctamente', user: users[index] });
-});
-
-// ✅ Mensaje personalizado en la raíz
+// Raíz
 app.get('/', (req, res) => {
-  res.send('Backend del proyecto');
+  res.send('Backend del proyecto activo ✅');
 });
 
-// Iniciar servidor
+// Manejo de errores global
+app.use((err, req, res, next) => {
+  console.error('🔥 Error interno:', err.stack);
+  res.status(500).json({ message: 'Error interno del servidor.' });
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor backend corriendo en puerto ${PORT}`);
 });

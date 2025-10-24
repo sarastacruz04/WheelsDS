@@ -1,9 +1,9 @@
 import express from "express";
-import { 
-  registerUser, 
-  loginUser, 
-  getUserByEmail,   // ✅ Nuevo
-  updateUserByEmail // ✅ Nuevo
+import {
+  registerUser,
+  loginUser,
+  getUserByEmail,
+  updateUserByEmail
 } from "../controllers/userController.js";
 
 const router = express.Router();
@@ -13,7 +13,7 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 
 // 🔹 Nuevas rutas para perfil y edición
-router.get("/:email", getUserByEmail);   // Obtener usuario por email
-router.put("/:email", updateUserByEmail); // Actualizar datos del usuario
+router.get("/:email", getUserByEmail);
+router.put("/:email", updateUserByEmail);
 
 export default router;
