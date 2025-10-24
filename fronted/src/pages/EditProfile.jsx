@@ -143,7 +143,7 @@ function EditProfile() {
   const handleSave = async () => {
     try {
       // URL del backend correctamente
-      const backendURL = "https://proyecto5-vs2l.onrender.com/api";
+      const backendURL = "https://proyecto5-vs2l.onrender.com/";
 
       const response = await axios.put(`${backendURL}/users/${form.email}`, form);
 
