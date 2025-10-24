@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 5000;
 // ✅ 1. Configuración CORS
 // ----------------------------------------------------
 const allowedOrigins = [
-  "https://proyecto-5v76.vercel.app", // frontend desplegado
+  "https://tu-frontend-render.onrender.com", // frontend desplegado
   "http://localhost:5173" // desarrollo local
 ];
 
