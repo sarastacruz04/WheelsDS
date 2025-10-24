@@ -1,8 +1,11 @@
+// src/pages/RegisterCar.jsx
 import React, { useState } from "react";
 import styled from "styled-components";
 import Colors from "../assets/Colors";
 import Button from "../components/common/Button";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import FeedbackModal from "../components/common/FeedbackModal";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -50,19 +53,56 @@ const RegisterCar = () => {
   const [cupos, setCupos] = useState("");
   const [marca, setMarca] = useState("");
   const [modelo, setModelo] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalDetails, setModalDetails] = useState("");
+  const [modalType, setModalType] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("🚗 Datos del carro registrados:", {
-      placa,
-      cupos,
-      marca,
-      modelo,
-    });
+    const email = localStorage.getItem("userEmail");
 
-    navigate("/car-photo"); 
+    if (!email) {
+      setModalType("no");
+      setModalMessage("Error");
+      setModalDetails("No se encontró el usuario actual.");
+      setShowModal(true);
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/users/${email}`,
+        {
+          carro: {
+            placa: placa.trim(),
+            cupos: Number(cupos),
+            marca: marca.trim(),
+            modelo: modelo.trim(),
+          },
+        }
+      );
+
+      setModalType("yes");
+      setModalMessage("Carro registrado");
+      setModalDetails(response.data.message);
+      setShowModal(true);
+    } catch (error) {
+      console.error(error);
+      setModalType("no");
+      setModalMessage("Error al registrar carro");
+      setModalDetails(
+        error.response?.data?.message || "Intenta nuevamente más tarde."
+      );
+      setShowModal(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    if (modalType === "yes") navigate("/car-photo");
   };
 
   return (
@@ -107,6 +147,15 @@ const RegisterCar = () => {
           <Button text="Siguiente" $primary type="submit" />
         </form>
       </Card>
+
+      {showModal && (
+        <FeedbackModal
+          type={modalType}
+          message={modalMessage}
+          details={modalDetails}
+          onClose={handleCloseModal}
+        />
+      )}
     </PageWrapper>
   );
 };

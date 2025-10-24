@@ -95,18 +95,31 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:5000/api/users/register', {
+      // 👇 añadimos los campos del carro en blanco
+      const newUser = {
         nombre: formData.nombre.trim(),
         apellido: formData.apellido.trim(),
         idUniversidad: formData.idUniversidad.trim(),
         email: formData.email.trim(),
         telefono: formData.telefono.trim(),
-        password: formData.password.trim()
-      });
+        password: formData.password.trim(),
+        carro: {
+          placa: "",
+          cupos: "",
+          marca: "",
+          modelo: ""
+        }
+      };
+
+      const response = await axios.post('http://localhost:5000/api/users/register', newUser);
 
       setModalMessage('Registro exitoso');
       setModalDetails(response.data.message);
       setModalType('yes');
+
+      // 💾 Guardar el email en localStorage
+      localStorage.setItem("userEmail", formData.email.trim());
+
       setShowModal(true);
 
     } catch (error) {
@@ -118,10 +131,10 @@ const Register = () => {
     }
   };
 
-  // 🔹 Cambiado: ahora redirige a /add-photoProfile después del registro exitoso
+  // 🔹 Redirige a /register-car después del registro exitoso
   const handleCloseModal = () => {
     setShowModal(false);
-    if (modalType === 'yes') navigate('/add-photoProfile');
+    if (modalType === 'yes') navigate('/register-car');
   };
 
   return (

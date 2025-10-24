@@ -5,12 +5,13 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 // Importa las páginas
-import LandingPage from './pages/LandingPage.jsx';  
+import LandingPage from './pages/LandingPage.jsx';
 import Login from './pages/Login.jsx';
 import ErrorPage from './pages/ErrorLogin.jsx';
 import Register from './pages/Register.jsx';
 import AddPhotoProfile from './pages/AddPhotoProfile.jsx';
 import CarQuestion from './pages/CarQuestion.jsx';
+import VerifyCar from './pages/VerifyCar.jsx'; // 🔹 NUEVA IMPORTACIÓN
 import RegisterCar from './pages/RegisterCar.jsx';
 import CarPhoto from './pages/CarPhoto.jsx';
 import SoatPhoto from './pages/SoatPhoto.jsx';
@@ -26,7 +27,7 @@ import Profile from './pages/Profile.jsx';
 import EditProfile from './pages/EditProfile.jsx';
 
 // ✅ NUEVA IMPORTACIÓN: Home para conductores
-import HomeDriver from './components/home/HomeDriver.jsx'; 
+import HomeDriver from './components/home/HomeDriver.jsx';
 
 function Layout({ children }) {
   const location = useLocation();
@@ -35,9 +36,15 @@ function Layout({ children }) {
 
   // Rutas donde NO se muestra el menú
   const hideMenuRoutes = [
-    '/', '/login', '/register', 
-    '/add-photoProfile', '/car-question', 
-    '/register-car', '/car-photo', '/soat-photo'
+    '/',
+    '/login',
+    '/register',
+    '/add-photoProfile',
+    '/car-question',
+    '/verify-car', // 🔹 AÑADIDO
+    '/register-car',
+    '/car-photo',
+    '/soat-photo'
   ];
 
   const hideMenu = hideMenuRoutes.includes(location.pathname.toLowerCase());
@@ -65,6 +72,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/add-photoProfile" element={<AddPhotoProfile />} />
           <Route path="/car-question" element={<CarQuestion />} />
+          <Route path="/verify-car" element={<VerifyCar />} /> {/* 🔹 NUEVA RUTA */}
           <Route path="/register-car" element={<RegisterCar />} />
           <Route path="/car-photo" element={<CarPhoto />} />
           <Route path="/soat-photo" element={<SoatPhoto />} />
@@ -77,16 +85,35 @@ function App() {
 
           {/* 🔹 Nueva ruta: perfil del usuario */}
           <Route path="/profile" element={<Profile />} />
+
           {/* ✅ NUEVA RUTA: editar perfil */}
           <Route path="/edit-profile" element={<EditProfile />} />
 
           {/* 🔹 Rutas protegidas o de navegación */}
-          <Route path="/" element={isAuthenticated ? <Navigate to="/home" /> : <Login />} />
-          <Route path="/home" element={isAuthenticated ? <Home /> : <Navigate to="/" />} />
-          <Route path="/reserved-trips" element={isAuthenticated ? <ReservedTrips /> : <Navigate to="/" />} />
-          <Route path="/created-trips" element={isAuthenticated ? <CreatedTrips /> : <Navigate to="/" />} />
-          <Route path="/create-trip" element={isAuthenticated ? <CreateTrip /> : <Navigate to="/" />} />
-          <Route path="/navigation-menu" element={isAuthenticated ? <NavigationMenu /> : <Navigate to="/" />} />
+          <Route
+            path="/"
+            element={isAuthenticated ? <Navigate to="/home" /> : <Login />}
+          />
+          <Route
+            path="/home"
+            element={isAuthenticated ? <Home /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/reserved-trips"
+            element={isAuthenticated ? <ReservedTrips /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/created-trips"
+            element={isAuthenticated ? <CreatedTrips /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/create-trip"
+            element={isAuthenticated ? <CreateTrip /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/navigation-menu"
+            element={isAuthenticated ? <NavigationMenu /> : <Navigate to="/" />}
+          />
           <Route path="/reserved-travelTittle" element={<ReservedTravelTittle />} />
           <Route path="/current-travel" element={<CurrentTravel />} />
         </Routes>

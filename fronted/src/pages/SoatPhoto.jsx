@@ -3,9 +3,10 @@ import styled from "styled-components";
 import Colors from "../assets/Colors";
 import Button from "../components/common/Button";
 import { useNavigate } from "react-router-dom";
-import AddPhoto from '../components/common/AddPhoto';
-import CarIcon from '../assets/AddPhoto.png';
+import AddPhoto from "../components/common/AddPhoto";
+import CarIcon from "../assets/AddPhoto.png";
 
+// --- Estilos ---
 const PageWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -41,39 +42,29 @@ const SoatPhoto = () => {
   const [photo, setPhoto] = useState(null);
   const navigate = useNavigate();
 
-  const handlePhotoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setPhoto(imageUrl);
-    }
-  };
-
-  // 🟩 Nueva función añadida (sin modificar nada de tu lógica existente)
   const handleNext = () => {
-    // Guardar el modo conductor en localStorage (opcional)
-    localStorage.setItem("isDriver", "true");
-
-    // Redirigir al Home exclusivo del conductor
-    navigate("/home-driver");
+    // 🔹 Siempre ir a Home
+    navigate("/home");
   };
 
   return (
     <PageWrapper>
       <Card>
-        <Title>¡Agrega una foto de tu SOAT vigente! </Title>
+        <Title>¡Agrega una foto de tu SOAT vigente!</Title>
 
         <AddPhoto onPhotoSelect={setPhoto} icon={CarIcon} />
 
         <ButtonsRow>
-          <Button text="Anterior" $primary onClick={() => navigate("/car-photo")} />
-
-          {/* 🟩 Aquí se usa la nueva función handleNext */}
+          <Button
+            text="Anterior"
+            $primary
+            onClick={() => navigate("/car-photo")}
+          />
           <Button text="Siguiente" onClick={handleNext} />
         </ButtonsRow>
       </Card>
     </PageWrapper>
-  );      
+  );
 };
 
 export default SoatPhoto;

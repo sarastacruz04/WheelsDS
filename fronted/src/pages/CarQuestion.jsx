@@ -4,6 +4,7 @@ import Colors from "../assets/Colors";
 import Button from "../components/common/Button";
 import { useNavigate } from "react-router-dom";
 
+// --- Estilos ---
 const PageWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -50,12 +51,15 @@ const CarQuestion = () => {
   const navigate = useNavigate();
 
   const handleNext = () => {
+    if (!answer) {
+      alert("Por favor selecciona una opción antes de continuar.");
+      return;
+    }
+
     if (answer === "si") {
-      navigate("/register-car"); // 🔹 cambia esta ruta si tu siguiente pantalla es otra
+      navigate("/verify-car");
     } else if (answer === "no") {
       navigate("/home");
-    } else {
-      alert("Por favor selecciona una opción antes de continuar.");
     }
   };
 

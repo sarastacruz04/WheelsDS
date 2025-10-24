@@ -1,0 +1,38 @@
+[
+  {
+    "placa": "asd123",
+    "cupos": "4",
+    "marca": "qqqq",
+    "modelo": "aaaa"
+  },
+  {
+    "placa": "ewq123",
+    "cupos": "4",
+    "marca": "aaaaa",
+    "modelo": "qqqqq"
+  },
+  {
+    "placa": "sdf123",
+    "cupos": "4",
+    "marca": "dddd",
+    "modelo": "33"
+  },
+  {
+    "placa": "qwe123",
+    "cupos": "4",
+    "marca": "www",
+    "modelo": "ddd"
+  },
+  {
+    "placa": "fgh123",
+    "cupos": "4",
+    "marca": "aaaa",
+    "modelo": "ddddd"
+  },
+  {
+    "placa": "ddf123",
+    "cupos": "4",
+    "marca": "ssss",
+    "modelo": "ddd"
+  }
+]

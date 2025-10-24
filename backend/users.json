@@ -38,5 +38,47 @@
     "email": "jose@gmail.com",
     "telefono": "3567479536",
     "password": "000000000"
+  },
+  {
+    "nombre": "Nicolle",
+    "apellido": "Corredor",
+    "idUniversidad": "0000398643",
+    "email": "nicolle@gmail.com",
+    "telefono": "3467890876",
+    "password": "123456789",
+    "carro": {
+      "placa": "",
+      "cupos": 0,
+      "marca": "",
+      "modelo": ""
+    }
+  },
+  {
+    "nombre": "davis",
+    "apellido": "aaaa",
+    "idUniversidad": "0000398643",
+    "email": "davis@gmail.com",
+    "telefono": "234567890",
+    "password": "123456789",
+    "carro": {
+      "placa": "qwe456",
+      "cupos": 4,
+      "marca": "wwww",
+      "modelo": "2222"
+    }
+  },
+  {
+    "nombre": "daniel",
+    "apellido": "car",
+    "idUniversidad": "0000234567",
+    "email": "daniel@gmail.com",
+    "telefono": "2467547456",
+    "password": "123456789",
+    "carro": {
+      "placa": "qwe123",
+      "cupos": 4,
+      "marca": "aaaaa",
+      "modelo": "aaaa"
+    }
   }
 ]
