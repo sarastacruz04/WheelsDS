@@ -141,23 +141,25 @@ app.put("/api/users/:email", async (req, res) => {
   try {
     const { nombre, apellido, idUniversidad, telefono, password } = req.body;
 
+    // Buscar usuario por email
     const user = await User.findOne({ email: req.params.email });
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
-    // Sobrescribir todos los campos enviados (incluso si son vacíos)
-    user.nombre = nombre ?? "";
-    user.apellido = apellido ?? "";
-    user.idUniversidad = idUniversidad ?? "";
-    user.telefono = telefono ?? "";
+    // ✅ Sobrescribir los campos con los que llegaron (reemplazar)
+    if (nombre !== undefined) user.nombre = nombre;
+    if (apellido !== undefined) user.apellido = apellido;
+    if (idUniversidad !== undefined) user.idUniversidad = idUniversidad;
+    if (telefono !== undefined) user.telefono = telefono;
 
-    // Encriptar contraseña si se envió
+    // ✅ Si se envía contraseña nueva, encriptarla
     if (password) {
       user.password = await bcrypt.hash(password, 10);
     }
 
+    // Guardar los cambios en MongoDB
     await user.save();
 
-    // Devolver usuario seguro (sin password)
+    // Enviar solo los datos seguros al frontend (sin contraseña)
     const safeUser = {
       nombre: user.nombre,
       apellido: user.apellido,
