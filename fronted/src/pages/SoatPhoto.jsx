@@ -49,6 +49,15 @@ const SoatPhoto = () => {
     }
   };
 
+  // 🟩 Nueva función añadida (sin modificar nada de tu lógica existente)
+  const handleNext = () => {
+    // Guardar el modo conductor en localStorage (opcional)
+    localStorage.setItem("isDriver", "true");
+
+    // Redirigir al Home exclusivo del conductor
+    navigate("/home-driver");
+  };
+
   return (
     <PageWrapper>
       <Card>
@@ -58,7 +67,9 @@ const SoatPhoto = () => {
 
         <ButtonsRow>
           <Button text="Anterior" $primary onClick={() => navigate("/car-photo")} />
-          <Button text="Siguiente" onClick={() => navigate("/home")} />
+
+          {/* 🟩 Aquí se usa la nueva función handleNext */}
+          <Button text="Siguiente" onClick={handleNext} />
         </ButtonsRow>
       </Card>
     </PageWrapper>

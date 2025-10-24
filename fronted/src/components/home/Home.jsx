@@ -4,22 +4,21 @@ import colors from '../../assets/Colors.jsx';
 import TripCard from "../trips/TripCard.jsx";
 import { useDriver } from "../../contexts/DriverContext.jsx";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
-import { faCar} from "@fortawesome/free-solid-svg-icons";
+import { faCar } from "@fortawesome/free-solid-svg-icons";
 import logo from '../../assets/Logo.png';
 import profilePhoto from '../../assets/ProfilePhoto.png';
-import { useNavigate } from 'react-router-dom'; // ✅ IMPORTACIÓN AÑADIDA
+import { useNavigate } from 'react-router-dom';
 import iconHome from "../../assets/Home.png";
 import iconReservedTravel from "../../assets/ReservedTravel.png";
 import iconCurrentTravel from "../../assets/CurrentTravel.png";
 import ReservedTravel from '../trips/ApiReserveTravel.jsx';
 
-
 // --- Estilos de la Página ---
 const HomeContainer = styled.div`
-    background-color: ${colors.white}; /* Fondo blanco para la parte superior (Header) */
+    background-color: ${colors.white};
     min-height: 100vh;
-    display: flex; /* Para que su hijo principal ocupe todo el espacio */
-    flex-direction: column; /* Organizar el contenido en columna */
+    display: flex;
+    flex-direction: column;
 `;
 
 const HeaderContainer = styled.div`
@@ -27,8 +26,8 @@ const HeaderContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
-  padding: 20px 40px 0; /* padding arriba y a los lados */
-  background-color: ${colors.white}; /* Asegura que el header siempre sea blanco */
+  padding: 20px 40px 0;
+  background-color: ${colors.white};
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -38,9 +37,9 @@ const HeaderContainer = styled.div`
 `;
 
 const ContentWrapper = styled.div`
-    flex-grow: 1; /* Permite que este contenedor use todo el espacio vertical restante */
+    flex-grow: 1;
     padding: 20px 40px;
-    background-color: #f0f4f7; /* Color de fondo para las tarjetas de viaje (similar al gris claro/azul pálido) */
+    background-color: #f0f4f7;
 
     @media (max-width: 768px) {
         padding: 20px;
@@ -61,6 +60,9 @@ const Logo = styled.img`
 
 const ProfileContainer = styled.div`
     position: relative;
+    display: flex;
+    align-items: center;
+    gap: 15px; /* 🔹 Añadido espacio entre foto y botón */
 `;
 
 const ProfileImage = styled.img`
@@ -102,6 +104,23 @@ const DropdownItem = styled.div`
     &:last-child {
         border-bottom: none;
     }
+`;
+
+// 🆕 🔹 Botón para cambiar a modo conductor
+const SwitchButton = styled.button`
+  background-color: ${colors.primary};
+  color: ${colors.white};
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: ${colors.details};
+  }
 `;
 
 // 🟩 Menú de navegación interno
@@ -146,9 +165,8 @@ const NavButton = styled.button`
   }
 `;
 
-// 🟩 Barra de búsqueda
 const SearchBarContainer = styled.div`
-    background-color: #d8e2ed; /* Azul más claro para el saludo y búsqueda */
+    background-color: #d8e2ed;
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 30px;
@@ -200,30 +218,29 @@ const ActionButton = styled.button`
 const TripCardGrid = styled.div`
     display: flex;
     flex-wrap: wrap;
-    gap: 20px; /* Espacio entre las tarjetas */
+    gap: 20px;
     justify-content: flex-start;
 
     & > div {
-        /* Estilos aplicados a cada TripCard dentro del grid */
-        flex-basis: calc(25% - 15px); /* 25% menos el espacio para el gap. (4 tarjetas por fila) */
-        min-width: 200px; /* Asegurar que no sean demasiado pequeñas en pantallas medianas */
+        flex-basis: calc(25% - 15px);
+        min-width: 200px;
     }
 
     @media (max-width: 1200px) {
         & > div {
-            flex-basis: calc(33.333% - 13.333px); /* 3 por fila */
+            flex-basis: calc(33.333% - 13.333px);
         }
     }
 
     @media (max-width: 768px) {
         & > div {
-            flex-basis: calc(50% - 10px); /* 2 por fila */
+            flex-basis: calc(50% - 10px);
         }
     }
 
     @media (max-width: 500px) {
         & > div {
-            flex-basis: 100%; /* 1 por fila */
+            flex-basis: 100%;
         }
     }
 `;
@@ -241,17 +258,11 @@ const GreetingLeft = styled.h2`
   }
 `;
 
-
-// --- Datos Ficticios ---
 const mockTrips = [
     { id: 1, sector: "Colina", conductor: "Miguel Ordoñez", desde: "Calle 153", para: "Universidad", horaSalida: "7:30 AM", valor: "$10.000", cupos: 3 },
     { id: 2, sector: "Calle 116", conductor: "Sandra Torres", desde: "Carrera 15", para: "Universidad", horaSalida: "6:45 AM", valor: "$8.000", cupos: 2 },
     { id: 3, sector: "Samaria Chía", conductor: "Nicolás Cruz", desde: "Chía Centro", para: "Universidad", horaSalida: "6:00 AM", valor: "$15.000", cupos: 1 },
     { id: 4, sector: "Huertas Cajicá", conductor: "Sara Mora", desde: "Cajicá", para: "Universidad", horaSalida: "6:15 AM", valor: "$18.000", cupos: 4 },
-    { id: 5, sector: "Cedritos", conductor: "Luisa Fernández", desde: "Calle 140", para: "Universidad", horaSalida: "7:10 AM", valor: "$9.000", cupos: 3 },
-    { id: 6, sector: "Rosales", conductor: "Andrés Gutiérrez", desde: "Calle 72", para: "Universidad", horaSalida: "7:00 AM", valor: "$12.000", cupos: 2 },
-    { id: 7, sector: "Usaquén", conductor: "Pedro Páramo", desde: "Calle 118", para: "Universidad", horaSalida: "6:50 AM", valor: "$11.000", cupos: 1 },
-    { id: 8, sector: "Chapinero", conductor: "Elena Ochoa", desde: "Calle 63", para: "Universidad", horaSalida: "7:20 AM", valor: "$10.500", cupos: 3 },
 ];
 
 function Home() {
@@ -266,20 +277,17 @@ function Home() {
     const [isReserving, setIsReserving] = useState(false);
     const [selectedTrip, setSelectedTrip] = useState(null);
 
-    // Función que se ejecuta al hacer clic en el botón '+' de la tarjeta
     const handleReserveStart = (trip) => {
         setSelectedTrip(trip);
         setIsReserving(true);
     };
 
-    // Función para volver al estado inicial (Home) después de terminar la reserva
     const handleReservationFinish = () => {
         setIsReserving(false);
         setSelectedTrip(null);
-        setActiveTab("home"); // Asegura que vuelva a la pestaña de inicio
+        setActiveTab("home");
     };
 
-    //Función para manejar la búsqueda
     const handleSearch = () => {
         const filtered = mockTrips.filter(
         (trip) =>
@@ -290,13 +298,12 @@ function Home() {
     };
 
     useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser && storedUser.nombre) {
-        setUserName(`${storedUser.nombre} ${storedUser.apellido || ""}`);
-    }
-  }, []);
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      if (storedUser && storedUser.nombre) {
+          setUserName(`${storedUser.nombre} ${storedUser.apellido || ""}`);
+      }
+    }, []);
 
-// Si isReserving es true, renderizamos el componente ReserveTrip
     if (isReserving && selectedTrip) {
         return (
             <HomeContainer>
@@ -321,6 +328,9 @@ return (
                         alt="Foto de perfil"
                         onClick={() => setMenuOpen(!menuOpen)}
                     />
+                    <SwitchButton onClick={() => navigate('/car-question')}>
+                        Cambiar a Conductor
+                    </SwitchButton> {/* 🆕 Nuevo botón */}
                     <DropdownMenu open={menuOpen}>
                         <DropdownItem onClick={() => navigate('/profile')}>Ver perfil</DropdownItem>
                         <DropdownItem onClick={() => navigate('/edit-profile')}>Editar datos</DropdownItem>
@@ -328,56 +338,48 @@ return (
                 </ProfileContainer>
             </HeaderContainer>
 
-            {/* 🔹 Menú interno */}
             <NavMenu>
                 <NavButton $active={activeTab === "home"} onClick={() => setActiveTab("home")}>
                     <img src={iconHome} alt="home" style={{ width: "18px", height: "18px", marginRight: "8px" }} />
                     Inicio
                 </NavButton>
-
                 <NavButton $active={activeTab === "reserved"} onClick={() => setActiveTab("reserved")}>
                     <img src={iconReservedTravel} alt="reserved" style={{ width: "18px", height: "18px", marginRight: "8px" }} />
                     Viajes reservados
                 </NavButton>
-
                 <NavButton $active={activeTab === "current"} onClick={() => setActiveTab("current")}>
                     <img src={iconCurrentTravel} alt="current" style={{ width: "18px", height: "18px", marginRight: "8px" }} />
                     Viajes en curso
                 </NavButton>
             </NavMenu>
 
-
-            {/* ContentWrapper: Nuevo contenedor para el fondo de las tarjetas */}
         <ContentWrapper>
-            {/* 🔁 Contenido dinámico */}
             {activeTab === "home" && (
                 <>
-                {/* 🔹 Barra de búsqueda con saludo a la izquierda - Fondo Azul Claro */}
                 <SearchBarContainer>
-                <GreetingLeft>¡Buen viaje {userName || "Pasajero"}!</GreetingLeft>
+                    <GreetingLeft>¡Buen viaje {userName || "Pasajero"}!</GreetingLeft>
 
-                <Selector value={sector} onChange={(e) => setSector(e.target.value)}>
-                    <option value="">Sectores</option>
-                    <option value="Colina">Colina</option>
-                    <option value="Calle 116">Calle 116</option>
-                    <option value="Samaria Chía">Samaria Chía</option>
-                    <option value="Huertas Cajicá">Huertas Cajicá</option>
-                </Selector>
+                    <Selector value={sector} onChange={(e) => setSector(e.target.value)}>
+                        <option value="">Sectores</option>
+                        <option value="Colina">Colina</option>
+                        <option value="Calle 116">Calle 116</option>
+                        <option value="Samaria Chía">Samaria Chía</option>
+                        <option value="Huertas Cajicá">Huertas Cajicá</option>
+                    </Selector>
 
-                <SearchInput
-                    type="number"
-                    placeholder="Cantidad de puestos disponibles"
-                    min="1"
-                    value={puestos}
-                    onChange={(e) => setPuestos(e.target.value)}
-                />
+                    <SearchInput
+                        type="number"
+                        placeholder="Cantidad de puestos disponibles"
+                        min="1"
+                        value={puestos}
+                        onChange={(e) => setPuestos(e.target.value)}
+                    />
 
-                <ActionButton onClick={handleSearch}>
-                    <FontAwesomeIcon icon={faCar} /> Buscar
-                </ActionButton>
+                    <ActionButton onClick={handleSearch}>
+                        <FontAwesomeIcon icon={faCar} /> Buscar
+                    </ActionButton>
                 </SearchBarContainer>
 
-                {/* Grid de tarjetas - El color de fondo es el de ContentWrapper */}
                 <TripCardGrid>
                     {filteredTrips.map((trip) => (
                     <TripCard
@@ -406,12 +408,6 @@ return (
                 <h3 style={{ textAlign: "center", color: colors.text }}>
                     🛣️ Aquí verás tus viajes en curso.
                 </h3>
-            )}
-
-            {isDriver && (
-                <p style={{ color: colors.details, textAlign: 'center', marginTop: '30px' }}>
-                Estás en modo Conductor. Tus viajes creados están en "Viajes Creados".
-                </p>
             )}
         </ContentWrapper>
     </HomeContainer>
