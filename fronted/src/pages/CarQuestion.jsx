@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Colors from "../assets/Colors";
 import Button from "../components/common/Button";
-import { useNavigate } from "react-router-dom"; // 🔹 IMPORTACIÓN FALTANTE
+import { useNavigate } from "react-router-dom"; // 🔹 IMPORTACIÓN NECESARIA
 
 // --- Estilos ---
 const PageWrapper = styled.div`
@@ -87,7 +87,7 @@ const CarQuestion = () => {
     }
 
     if (answer === "si") {
-      navigate("/verify-car");
+      navigate("/register-car"); // 🔹 CAMBIO: ir a RegisterCar
     } else if (answer === "no") {
       navigate("/home");
     }
