@@ -142,13 +142,20 @@ function EditProfile() {
 
   const handleSave = async () => {
     try {
-      await axios.put(`https://proyecto-y2t3.vercel.app/api/users/${form.email}`, form);
-      localStorage.setItem("user", JSON.stringify(form));
+      // ✅ Apunta al backend desplegado correctamente
+      const backendURL = "https://proyecto9-c03h.onrender.com";
+      const response = await axios.put(`${backendURL}/api/users/${form.email}`, form);
+
+      // ✅ Actualiza localStorage con los nuevos datos
+      localStorage.setItem("user", JSON.stringify(response.data.user));
       alert("Perfil actualizado exitosamente");
       navigate("/profile");
     } catch (error) {
-      console.error("Error al actualizar perfil:", error);
-      alert("Hubo un problema al guardar los cambios");
+      console.error("Error al actualizar perfil:", error.response?.data || error.message);
+      alert(
+        error.response?.data?.message ||
+          "Hubo un problema al guardar los cambios"
+      );
     }
   };
 
