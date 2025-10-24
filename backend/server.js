@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 // ✅ Configurar CORS para permitir tu frontend desplegado en Vercel
 app.use(cors({
   origin: [
-    "https://proyecto-unku.vercel.app", // URL de tu frontend
+    "https://proyecto-5v76.vercel.app/", // URL de tu frontend
     "http://localhost:5173"             // para pruebas locales con Vite
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
