@@ -142,17 +142,18 @@ function EditProfile() {
 
   const handleSave = async () => {
     try {
-      // ✅ Apunta al backend desplegado correctamente
       const backendURL = "https://proyecto9-c03h.onrender.com";
+
       const response = await axios.put(`${backendURL}/api/users/${form.email}`, form);
 
-      // ✅ Actualiza localStorage con los nuevos datos
+      // Guardar datos actualizados en localStorage (sin contraseña)
       const updatedUser = response.data.user;
       localStorage.setItem("user", JSON.stringify(updatedUser));
 
-      // ✅ Mostrar alerta y redirigir al Home
       alert("Perfil actualizado exitosamente");
-      navigate("/", { replace: true }); // ahora va al Home.jsx
+
+      // Redirigir al Home
+      navigate("/", { replace: true });
     } catch (error) {
       console.error("Error al actualizar perfil:", error.response?.data || error.message);
       alert(
