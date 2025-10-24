@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Colors from "../assets/Colors";
 import Button from "../components/common/Button";
-import { useNavigate } from "react-router-dom"; // 🔹 IMPORTACIÓN NECESARIA
+import { useNavigate } from "react-router-dom";
 
 // --- Estilos ---
 const PageWrapper = styled.div`
@@ -80,6 +80,14 @@ const CarQuestion = () => {
   const [answer, setAnswer] = useState("");
   const navigate = useNavigate();
 
+  // Evita que alguien entre directo a esta ruta sin haberse registrado
+  useEffect(() => {
+    const userEmail = localStorage.getItem("userEmail");
+    if (!userEmail) {
+      navigate("/login");
+    }
+  }, [navigate]);
+
   const handleNext = () => {
     if (!answer) {
       alert("Por favor selecciona una opción antes de continuar.");
@@ -87,9 +95,9 @@ const CarQuestion = () => {
     }
 
     if (answer === "si") {
-      navigate("/register-car"); // 🔹 CAMBIO: ir a RegisterCar
-    } else if (answer === "no") {
-      navigate("/home");
+      navigate("/register-car"); // Ir a registrar carro
+    } else {
+      navigate("/home"); // Saltar al home si no quiere registrar carro
     }
   };
 
