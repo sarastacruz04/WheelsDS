@@ -144,12 +144,12 @@ app.put("/api/users/:email", async (req, res) => {
     const user = await User.findOne({ email: req.params.email });
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
-    // Sobrescribir todos los campos recibidos (incluso si son vacíos)
-    user.nombre = nombre ?? user.nombre;
-    user.apellido = apellido ?? user.apellido;
-    user.idUniversidad = idUniversidad ?? user.idUniversidad;
-    user.telefono = telefono ?? user.telefono;
-    
+    // Sobrescribir solo si vienen valores válidos
+    if (typeof nombre === "string") user.nombre = nombre;
+    if (typeof apellido === "string") user.apellido = apellido;
+    if (typeof idUniversidad === "string") user.idUniversidad = idUniversidad;
+    if (typeof telefono === "string") user.telefono = telefono;
+
     if (password) {
       user.password = await bcrypt.hash(password, 10);
     }
@@ -170,7 +170,6 @@ app.put("/api/users/:email", async (req, res) => {
     res.status(500).json({ message: "Error en el servidor" });
   }
 });
-
 // Raíz
 app.get("/", (req, res) => {
   res.send("✅ Backend funcionando correctamente 🚀");
