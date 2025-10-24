@@ -126,13 +126,14 @@ const Register = () => {
       };
 
       const response = await axios.post(
-        "https://proyecto5-vs2l.onrender.com/api/users/register",
-        newUser,
-        { 
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true
-        }
-      );
+  "https://proyecto5-vs2l.onrender.com/api/users/register",
+  newUser,
+  { 
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true
+  }
+);
+
 
       setModalMessage('Registro exitoso');
       setModalDetails(response.data.message || 'Tu cuenta fue creada correctamente.');
