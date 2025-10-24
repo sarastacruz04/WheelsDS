@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import bcrypt from "bcryptjs";
 
 dotenv.config();
 
@@ -10,7 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ----------------------------------------------------
-// ✅ 1. Configuración CORS con middleware oficial
+// ✅ 1. Configuración CORS
 // ----------------------------------------------------
 const allowedOrigins = [
   "https://proyecto9-c03h.onrender.com",
@@ -19,13 +20,9 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // permitir requests sin origin (ej. Postman)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("No permitido por CORS"));
-    }
+    if (!origin) return callback(null, true); // Postman o requests sin origin
+    if (allowedOrigins.includes(origin)) callback(null, true);
+    else callback(new Error("No permitido por CORS"));
   },
   credentials: true,
   methods: "GET,POST,PUT,DELETE,OPTIONS",
@@ -77,13 +74,16 @@ app.post("/api/users/register", async (req, res) => {
       return res.status(400).json({ message: "El correo ya está registrado" });
     }
 
+    // Encriptar contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const nuevoUsuario = new User({
       nombre,
       apellido,
       idUniversidad,
       email,
       telefono,
-      password,
+      password: hashedPassword,
     });
 
     await nuevoUsuario.save();
@@ -103,9 +103,11 @@ app.post("/api/users/login", async (req, res) => {
       return res.status(400).json({ message: "Faltan campos" });
 
     const user = await User.findOne({ email });
-    if (!user || user.password !== password) {
-      return res.status(401).json({ message: "Correo o contraseña incorrectos" });
-    }
+    if (!user) return res.status(401).json({ message: "Correo o contraseña incorrectos" });
+
+    // Comparar contraseña
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: "Correo o contraseña incorrectos" });
 
     res.status(200).json({
       message: "Login exitoso",
@@ -137,14 +139,25 @@ app.get("/api/users/:email", async (req, res) => {
 // Editar usuario
 app.put("/api/users/:email", async (req, res) => {
   try {
-    const user = await User.findOneAndUpdate(
-      { email: req.params.email },
-      req.body,
-      { new: true }
-    );
+    const { nombre, apellido, idUniversidad, telefono, password } = req.body;
+
+    const user = await User.findOne({ email: req.params.email });
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    // Actualizar solo los campos que envíe el frontend
+    if (nombre) user.nombre = nombre;
+    if (apellido) user.apellido = apellido;
+    if (idUniversidad) user.idUniversidad = idUniversidad;
+    if (telefono) user.telefono = telefono;
+    if (password) {
+      user.password = await bcrypt.hash(password, 10); // encriptar nueva contraseña
+    }
+
+    await user.save();
+
     res.json({ message: "Usuario actualizado correctamente", user });
   } catch (error) {
+    console.error("Error al actualizar usuario:", error);
     res.status(500).json({ message: "Error en el servidor" });
   }
 });
