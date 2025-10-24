@@ -117,7 +117,9 @@ const Register = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    if (modalType === 'yes') navigate('/register-car');
+    if (modalType === 'yes') {
+      navigate('/car-question'); // 🔹 Redirige primero a CarQuestion
+    }
   };
 
   return (
