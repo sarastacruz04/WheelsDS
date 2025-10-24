@@ -155,7 +155,16 @@ app.put("/api/users/:email", async (req, res) => {
 
     await user.save();
 
-    res.json({ message: "Usuario actualizado correctamente", user });
+    // ✅ Devolver solo los campos seguros para evitar problemas de login/redirección
+    const safeUser = {
+      nombre: user.nombre,
+      apellido: user.apellido,
+      email: user.email,
+      idUniversidad: user.idUniversidad,
+      telefono: user.telefono,
+    };
+
+    res.json({ message: "Usuario actualizado correctamente", user: safeUser });
   } catch (error) {
     console.error("Error al actualizar usuario:", error);
     res.status(500).json({ message: "Error en el servidor" });
