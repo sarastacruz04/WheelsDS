@@ -80,5 +80,33 @@
       "marca": "ssss",
       "modelo": "sssss"
     }
+  },
+  {
+    "nombre": "Sara",
+    "apellido": "Santacruz",
+    "idUniversidad": "000032",
+    "email": "sara.santacruz04@gmail.com",
+    "telefono": "3183903302",
+    "password": "sasa",
+    "carro": {
+      "placa": "",
+      "cupos": 0,
+      "marca": "",
+      "modelo": ""
+    }
+  },
+  {
+    "nombre": "Sara",
+    "apellido": "Santacruz",
+    "idUniversidad": "000032",
+    "email": "dsa@gmail.com",
+    "telefono": "3183903302",
+    "password": "dsada",
+    "carro": {
+      "placa": "",
+      "cupos": "",
+      "marca": "",
+      "modelo": ""
+    }
   }
 ]
