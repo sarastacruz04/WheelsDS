@@ -12,6 +12,11 @@ const PageWrapper = styled.div`
   align-items: center;
   height: 100vh;
   background-color: ${Colors.pageBackground};
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
 `;
 
 const Card = styled.div`
@@ -24,17 +29,43 @@ const Card = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   min-width: 380px;
   border: 1px solid ${Colors.primary};
+
+  @media (max-width: 768px) {
+    padding: 30px 20px;
+    width: 100%;
+    min-width: unset;
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px 15px;
+  }
 `;
 
 const Title = styled.h1`
   color: ${Colors.primary};
   font-size: 24px;
   margin-bottom: 25px;
+  text-align: center;
+
+  @media (max-width: 480px) {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
 `;
 
 const ButtonsRow = styled.div`
   display: flex;
   gap: 15px;
+  margin-top: 20px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    width: 100%;
+
+    button {
+      width: 100%;
+    }
+  }
 `;
 
 const CarPhoto = () => {

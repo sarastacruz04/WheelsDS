@@ -75,10 +75,10 @@
     "telefono": "2467547456",
     "password": "123456789",
     "carro": {
-      "placa": "qwe123",
-      "cupos": 4,
-      "marca": "aaaaa",
-      "modelo": "aaaa"
+      "placa": "asd123",
+      "cupos": 5,
+      "marca": "ssss",
+      "modelo": "sssss"
     }
   }
 ]

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Colors from "../assets/Colors";
 import Button from "../components/common/Button";
-import { useNavigate } from "react-router-dom";
 
 // --- Estilos ---
 const PageWrapper = styled.div`
@@ -11,6 +10,11 @@ const PageWrapper = styled.div`
   align-items: center;
   height: 100vh;
   background-color: ${Colors.pageBackground};
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
 `;
 
 const Card = styled.div`
@@ -23,6 +27,16 @@ const Card = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   min-width: 350px;
   border: 1px solid ${Colors.primary};
+
+  @media (max-width: 768px) {
+    padding: 30px 20px;
+    width: 100%;
+    min-width: unset;
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px 15px;
+  }
 `;
 
 const Title = styled.h2`
@@ -30,12 +44,23 @@ const Title = styled.h2`
   font-size: 22px;
   margin-bottom: 20px;
   text-align: center;
+
+  @media (max-width: 480px) {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
 `;
 
 const Options = styled.div`
   display: flex;
   gap: 30px;
   margin-bottom: 25px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+  }
 `;
 
 const OptionLabel = styled.label`
@@ -44,6 +69,10 @@ const OptionLabel = styled.label`
   display: flex;
   align-items: center;
   gap: 5px;
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
 `;
 
 const CarQuestion = () => {

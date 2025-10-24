@@ -13,6 +13,10 @@ const PageWrapper = styled.div`
   align-items: center;
   height: 100vh;
   background-color: ${Colors.pageBackground};
+  padding: 20px;
+
+  @media (max-width: 768px) { padding: 15px; }
+  @media (max-width: 480px) { padding: 10px; }
 `;
 
 const Card = styled.div`
@@ -25,6 +29,16 @@ const Card = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   min-width: 380px;
   border: 1px solid ${Colors.primary};
+
+  @media (max-width: 768px) {
+    padding: 35px 30px;
+    width: 100%;
+    max-width: 450px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 25px 20px;
+  }
 `;
 
 const Title = styled.h2`
@@ -32,6 +46,11 @@ const Title = styled.h2`
   font-size: 24px;
   margin-bottom: 25px;
   text-align: center;
+
+  @media (max-width: 480px) {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
 `;
 
 const Input = styled.input`
@@ -43,8 +62,11 @@ const Input = styled.input`
   margin-bottom: 15px;
   outline: none;
 
-  &::placeholder {
-    color: #999;
+  &::placeholder { color: #999; }
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+    padding: 10px;
   }
 `;
 
@@ -61,7 +83,6 @@ const RegisterCar = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const email = localStorage.getItem("userEmail");
 
     if (!email) {
@@ -144,7 +165,7 @@ const RegisterCar = () => {
             onChange={(e) => setModelo(e.target.value)}
           />
 
-          <Button text="Siguiente" $primary type="submit" />
+          <Button text="Siguiente" $primary type="submit" style={{ width: '100%' }} />
         </form>
       </Card>
 

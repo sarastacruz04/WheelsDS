@@ -1,3 +1,4 @@
+// src/pages/SoatPhoto.jsx
 import React, { useState } from "react";
 import styled from "styled-components";
 import Colors from "../assets/Colors";
@@ -6,13 +7,16 @@ import { useNavigate } from "react-router-dom";
 import AddPhoto from "../components/common/AddPhoto";
 import CarIcon from "../assets/AddPhoto.png";
 
-// --- Estilos ---
 const PageWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   background-color: ${Colors.pageBackground};
+  padding: 20px;
+
+  @media (max-width: 768px) { padding: 15px; }
+  @media (max-width: 480px) { padding: 10px; }
 `;
 
 const Card = styled.div`
@@ -25,17 +29,44 @@ const Card = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   min-width: 380px;
   border: 1px solid ${Colors.primary};
+
+  @media (max-width: 768px) {
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 450px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 30px 20px;
+  }
 `;
 
 const Title = styled.h1`
   color: ${Colors.primary};
   font-size: 24px;
   margin-bottom: 25px;
+  text-align: center;
+
+  @media (max-width: 480px) {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
 `;
 
 const ButtonsRow = styled.div`
   display: flex;
   gap: 15px;
+  margin-top: 20px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+
+    & > button {
+      width: 100%;
+    }
+  }
 `;
 
 const SoatPhoto = () => {
@@ -43,7 +74,6 @@ const SoatPhoto = () => {
   const navigate = useNavigate();
 
   const handleNext = () => {
-    // 🔹 Siempre ir a Home
     navigate("/home");
   };
 

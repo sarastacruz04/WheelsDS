@@ -7,13 +7,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import FeedbackModal from '../components/common/FeedbackModal';
 
-// --- Estilos ---
 const PageWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   background-color: ${Colors.pageBackground};
+  padding: 20px;
+
+  @media (max-width: 768px) { padding: 15px; }
+  @media (max-width: 480px) { padding: 10px; }
 `;
 
 const Card = styled.div`
@@ -26,12 +29,27 @@ const Card = styled.div`
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   min-width: 400px;
   border: 1px solid ${Colors.primary};
+
+  @media (max-width: 768px) {
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 450px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 30px 20px;
+  }
 `;
 
 const Title = styled.h1`
   color: ${Colors.primary};
   font-size: 26px;
   margin-bottom: 25px;
+
+  @media (max-width: 480px) {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
 `;
 
 const Form = styled.form`
@@ -43,6 +61,10 @@ const Form = styled.form`
 const Row = styled.div`
   display: flex;
   gap: 10px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
 `;
 
 const Input = styled.input`
@@ -53,7 +75,14 @@ const Input = styled.input`
   font-size: 15px;
   margin-bottom: 15px;
   outline: none;
+
   &::placeholder { color: #999; }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px;
+  }
 `;
 
 const Text = styled.p`
@@ -61,6 +90,8 @@ const Text = styled.p`
   font-size: 14px;
   color: ${Colors.primary};
   text-align: center;
+
+  @media (max-width: 480px) { font-size: 13px; }
 `;
 
 const StyledLink = styled(Link)`
@@ -72,58 +103,36 @@ const StyledLink = styled(Link)`
 
 const Register = () => {
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
-    nombre: '',
-    apellido: '',
-    idUniversidad: '',
-    email: '',
-    telefono: '',
-    password: ''
+    nombre: '', apellido: '', idUniversidad: '', email: '', telefono: '', password: ''
   });
-
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [modalDetails, setModalDetails] = useState('');
-  const [modalType, setModalType] = useState(''); // 'yes' o 'no'
+  const [modalType, setModalType] = useState('');
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
     try {
-      // 👇 añadimos los campos del carro en blanco
       const newUser = {
+        ...formData,
         nombre: formData.nombre.trim(),
         apellido: formData.apellido.trim(),
         idUniversidad: formData.idUniversidad.trim(),
         email: formData.email.trim(),
         telefono: formData.telefono.trim(),
         password: formData.password.trim(),
-        carro: {
-          placa: "",
-          cupos: "",
-          marca: "",
-          modelo: ""
-        }
+        carro: { placa: "", cupos: "", marca: "", modelo: "" }
       };
-
       const response = await axios.post('http://localhost:5000/api/users/register', newUser);
-
       setModalMessage('Registro exitoso');
       setModalDetails(response.data.message);
       setModalType('yes');
-
-      // 💾 Guardar el email en localStorage
       localStorage.setItem("userEmail", formData.email.trim());
-
       setShowModal(true);
-
     } catch (error) {
-      console.error(error.response || error.message || error);
       setModalMessage('Error al registrarse');
       setModalDetails(error.response?.data?.message || 'Intenta nuevamente.');
       setModalType('no');
@@ -131,7 +140,6 @@ const Register = () => {
     }
   };
 
-  // 🔹 Redirige a /register-car después del registro exitoso
   const handleCloseModal = () => {
     setShowModal(false);
     if (modalType === 'yes') navigate('/register-car');
@@ -141,54 +149,16 @@ const Register = () => {
     <PageWrapper>
       <Card>
         <Title>Registro</Title>
-
         <Form onSubmit={handleRegister}>
           <Row>
-            <Input
-              name="nombre"
-              placeholder="Nombre"
-              value={formData.nombre}
-              onChange={handleChange}
-            />
-            <Input
-              name="apellido"
-              placeholder="Apellido"
-              value={formData.apellido}
-              onChange={handleChange}
-            />
+            <Input name="nombre" placeholder="Nombre" value={formData.nombre} onChange={handleChange} />
+            <Input name="apellido" placeholder="Apellido" value={formData.apellido} onChange={handleChange} />
           </Row>
-
-          <Input
-            name="idUniversidad"
-            placeholder="ID de la Universidad"
-            value={formData.idUniversidad}
-            onChange={handleChange}
-          />
-
-          <Input
-            name="email"
-            type="email"
-            placeholder="Correo Electrónico"
-            value={formData.email}
-            onChange={handleChange}
-          />
-
-          <Input
-            name="telefono"
-            placeholder="Teléfono"
-            value={formData.telefono}
-            onChange={handleChange}
-          />
-
-          <Input
-            name="password"
-            type="password"
-            placeholder="Contraseña"
-            value={formData.password}
-            onChange={handleChange}
-          />
-
-          <Button text="Registrarse" $primary type="submit" />
+          <Input name="idUniversidad" placeholder="ID de la Universidad" value={formData.idUniversidad} onChange={handleChange} />
+          <Input name="email" type="email" placeholder="Correo Electrónico" value={formData.email} onChange={handleChange} />
+          <Input name="telefono" placeholder="Teléfono" value={formData.telefono} onChange={handleChange} />
+          <Input name="password" type="password" placeholder="Contraseña" value={formData.password} onChange={handleChange} />
+          <Button text="Registrarse" $primary type="submit" style={{ width: '100%' }} />
         </Form>
 
         <Text>¿Ya tienes una cuenta?</Text>

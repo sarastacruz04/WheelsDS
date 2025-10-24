@@ -11,6 +11,15 @@ const PageWrapper = styled.div`
   align-items: center;
   height: 100vh;
   background-color: ${Colors.pageBackground};
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    padding: 15px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px;
+  }
 `;
 
 const Card = styled.div`
@@ -24,24 +33,48 @@ const Card = styled.div`
   min-width: 350px;
   border: 1px solid ${Colors.primary};
   text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 40px 30px;
+    width: 100%;
+  }
+
+  @media (max-width: 480px) {
+    padding: 30px 20px;
+  }
 `;
 
 const IconContainer = styled.div`
   font-size: 60px;
   color: red;
   margin-bottom: 20px;
+
+  @media (max-width: 480px) {
+    font-size: 45px;
+    margin-bottom: 15px;
+  }
 `;
 
 const Title = styled.h1`
   color: ${Colors.primary};
   font-size: 24px;
   margin-bottom: 10px;
+
+  @media (max-width: 480px) {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
 `;
 
 const Message = styled.p`
   color: #333;
   font-size: 16px;
   margin-bottom: 30px;
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
 `;
 
 const ErrorPage = () => {

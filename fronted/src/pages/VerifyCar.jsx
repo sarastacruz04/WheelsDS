@@ -1,16 +1,19 @@
+// src/pages/VerifyCar.jsx
 import React, { useState } from "react";
 import styled from "styled-components";
 import Colors from "../assets/Colors";
 import Button from "../components/common/Button";
-import { useNavigate } from "react-router-dom";
 
-// --- Estilos idénticos a CarQuestion ---
 const PageWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   background-color: ${Colors.pageBackground};
+  padding: 20px;
+
+  @media (max-width: 768px) { padding: 15px; }
+  @media (max-width: 480px) { padding: 10px; }
 `;
 
 const Card = styled.div`
@@ -23,6 +26,16 @@ const Card = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   min-width: 350px;
   border: 1px solid ${Colors.primary};
+
+  @media (max-width: 768px) {
+    padding: 40px 25px;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 30px 20px;
+  }
 `;
 
 const Title = styled.h2`
@@ -30,12 +43,23 @@ const Title = styled.h2`
   font-size: 22px;
   margin-bottom: 20px;
   text-align: center;
+
+  @media (max-width: 480px) {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
 `;
 
 const Options = styled.div`
   display: flex;
   gap: 30px;
   margin-bottom: 25px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
 `;
 
 const OptionLabel = styled.label`
@@ -44,6 +68,10 @@ const OptionLabel = styled.label`
   display: flex;
   align-items: center;
   gap: 5px;
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
 `;
 
 const VerifyCar = () => {
@@ -57,9 +85,9 @@ const VerifyCar = () => {
     }
 
     if (answer === "si") {
-      navigate("/home-driver"); // ✅ Si dice sí, va a HomeDriver
+      navigate("/home-driver");
     } else {
-      navigate("/register-car"); // ✅ Si dice no, va a RegisterCar
+      navigate("/register-car");
     }
   };
 
@@ -92,7 +120,7 @@ const VerifyCar = () => {
           </OptionLabel>
         </Options>
 
-        <Button text="Continuar" $primary onClick={handleNext} />
+        <Button text="Continuar" $primary onClick={handleNext} style={{ width: '100%' }} />
       </Card>
     </PageWrapper>
   );

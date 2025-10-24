@@ -4,7 +4,7 @@ import styled from "styled-components";
 import colors from "../assets/Colors";
 import profilePhoto from "../assets/ProfilePhoto.png";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // 🆕 añadimos axios para llamar al backend
+import axios from "axios";
 
 const ProfileContainer = styled.div`
   padding: 40px;
@@ -13,6 +13,14 @@ const ProfileContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @media (max-width: 768px) {
+    padding: 25px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 15px;
+  }
 `;
 
 const Card = styled.div`
@@ -23,6 +31,15 @@ const Card = styled.div`
   width: 400px;
   max-width: 90%;
   text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 25px 30px;
+    width: 100%;
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px 20px;
+  }
 `;
 
 const ProfileImage = styled.img`
@@ -31,17 +48,31 @@ const ProfileImage = styled.img`
   border-radius: 50%;
   margin-bottom: 20px;
   border: 3px solid ${colors.primary};
+
+  @media (max-width: 480px) {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 15px;
+  }
 `;
 
 const Name = styled.h2`
   color: ${colors.primary};
   margin-bottom: 10px;
+
+  @media (max-width: 480px) {
+    font-size: 18px;
+  }
 `;
 
 const Email = styled.p`
   color: ${colors.text};
   font-size: 15px;
   margin: 5px 0;
+
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
 `;
 
 const BackButton = styled.button`
@@ -57,6 +88,21 @@ const BackButton = styled.button`
   &:hover {
     background-color: #4a5d72;
   }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    padding: 10px;
+  }
+`;
+
+const LogoutButton = styled(BackButton)`
+  background-color: #d9534f;
+
+  &:hover {
+    background-color: #c9302c;
+  }
+
+  margin-top: 10px;
 `;
 
 function Profile() {
@@ -67,7 +113,6 @@ function Profile() {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) setUser(storedUser);
 
-    // 🆕 Obtener datos reales del backend según el email guardado
     const fetchUserData = async () => {
       try {
         const email = storedUser?.email;
@@ -91,17 +136,14 @@ function Profile() {
         <Email><strong>Rol:</strong> {user?.role || "Pasajero"}</Email>
 
         <BackButton onClick={() => navigate("/home")}>← Volver</BackButton>
-
-        {/* 🆕 Botón de Cerrar Sesión */}
-        <BackButton
-          style={{ backgroundColor: "#d9534f", marginTop: "10px" }}
+        <LogoutButton
           onClick={() => {
             localStorage.removeItem("user");
             navigate("/login");
           }}
         >
           Cerrar sesión
-        </BackButton>
+        </LogoutButton>
       </Card>
     </ProfileContainer>
   );
