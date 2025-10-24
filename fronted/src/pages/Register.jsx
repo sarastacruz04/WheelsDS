@@ -118,6 +118,11 @@ const Register = () => {
         email: formData.email.trim(),
         telefono: formData.telefono.trim(),
         password: formData.password.trim(),
+        // ✅ Campos del carro inicializados en blanco
+        placa: "",
+        cupos: 0,
+        marca: "",
+        modelo: ""
       };
 
       const response = await axios.post(
@@ -125,7 +130,7 @@ const Register = () => {
         newUser,
         { 
           headers: { "Content-Type": "application/json" },
-          withCredentials: true // importante si tu backend usa cookies
+          withCredentials: true
         }
       );
 

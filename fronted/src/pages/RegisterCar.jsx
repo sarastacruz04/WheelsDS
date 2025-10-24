@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Colors from "../assets/Colors";
 import Button from "../components/common/Button";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import FeedbackModal from "../components/common/FeedbackModal";
-import API_BASE_URL from '../config/api';
+import API_BASE_URL from "../config/api";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -63,30 +63,43 @@ const RegisterCar = () => {
   const [modalType, setModalType] = useState("");
   const navigate = useNavigate();
 
+  const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("userEmail");
+    if (storedEmail) setUserEmail(storedEmail);
+    else navigate("/login");
+  }, [navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const email = localStorage.getItem("userEmail");
-    if (!email) {
+
+    if (!placa || !cupos || !marca || !modelo) {
       setModalType("no");
-      setModalMessage("Error");
-      setModalDetails("No se encontró el usuario actual.");
+      setModalMessage("Campos incompletos");
+      setModalDetails("Por favor llena todos los campos antes de continuar.");
       setShowModal(true);
       return;
     }
 
     try {
       const response = await axios.put(
-        `${API_BASE_URL}/users/${email}`,
+        `${API_BASE_URL}/users/${userEmail}`,
         {
-          carro: { placa: placa.trim(), cupos: Number(cupos), marca: marca.trim(), modelo: modelo.trim() }
-        }
+          placa: placa.trim(),
+          cupos: Number(cupos),
+          marca: marca.trim(),
+          modelo: modelo.trim(),
+        },
+        { headers: { "Content-Type": "application/json" } }
       );
+
       setModalType("yes");
       setModalMessage("Carro registrado");
-      setModalDetails(response.data.message);
+      setModalDetails(response.data.message || "Tu carro se guardó correctamente.");
       setShowModal(true);
     } catch (error) {
-      console.error(error);
+      console.error("❌ Error al actualizar carro:", error);
       setModalType("no");
       setModalMessage("Error al registrar carro");
       setModalDetails(error.response?.data?.message || "Intenta nuevamente más tarde.");
@@ -103,15 +116,26 @@ const RegisterCar = () => {
     <PageWrapper>
       <Card>
         <Title>¡Registra tu carro!</Title>
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center" }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{ display: "flex", flexDirection: "column", width: "100%", alignItems: "center" }}
+        >
           <Input type="text" placeholder="Placa" value={placa} onChange={(e) => setPlaca(e.target.value)} />
           <Input type="number" placeholder="Cupos" value={cupos} onChange={(e) => setCupos(e.target.value)} />
           <Input type="text" placeholder="Marca" value={marca} onChange={(e) => setMarca(e.target.value)} />
           <Input type="text" placeholder="Modelo" value={modelo} onChange={(e) => setModelo(e.target.value)} />
-          <Button text="Siguiente" $primary type="submit" style={{ width: '100%' }} />
+          <Button text="Siguiente" $primary type="submit" style={{ width: "100%" }} />
         </form>
       </Card>
-      {showModal && <FeedbackModal type={modalType} message={modalMessage} details={modalDetails} onClose={handleCloseModal} />}
+
+      {showModal && (
+        <FeedbackModal
+          type={modalType}
+          message={modalMessage}
+          details={modalDetails}
+          onClose={handleCloseModal}
+        />
+      )}
     </PageWrapper>
   );
 };
