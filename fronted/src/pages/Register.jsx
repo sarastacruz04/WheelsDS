@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import Colors from '../assets/Colors';
-import Button from '../components/common/Button';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import FeedbackModal from '../components/common/FeedbackModal';
+// src/pages/Register.jsx
+import React, { useState } from "react";
+import styled from "styled-components";
+import Colors from "../assets/Colors";
+import Button from "../components/common/Button";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import FeedbackModal from "../components/common/FeedbackModal";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -29,15 +30,8 @@ const Card = styled.div`
   min-width: 400px;
   border: 1px solid ${Colors.primary};
 
-  @media (max-width: 768px) {
-    padding: 40px 30px;
-    width: 100%;
-    max-width: 450px;
-  }
-
-  @media (max-width: 480px) {
-    padding: 30px 20px;
-  }
+  @media (max-width: 768px) { padding: 40px 30px; width: 100%; max-width: 450px; }
+  @media (max-width: 480px) { padding: 30px 20px; }
 `;
 
 const Title = styled.h1`
@@ -45,10 +39,7 @@ const Title = styled.h1`
   font-size: 26px;
   margin-bottom: 25px;
 
-  @media (max-width: 480px) {
-    font-size: 22px;
-    margin-bottom: 20px;
-  }
+  @media (max-width: 480px) { font-size: 22px; margin-bottom: 20px; }
 `;
 
 const Form = styled.form`
@@ -61,9 +52,7 @@ const Row = styled.div`
   display: flex;
   gap: 10px;
 
-  @media (max-width: 480px) {
-    flex-direction: column;
-  }
+  @media (max-width: 480px) { flex-direction: column; }
 `;
 
 const Input = styled.input`
@@ -77,11 +66,7 @@ const Input = styled.input`
 
   &::placeholder { color: #999; }
 
-  @media (max-width: 480px) {
-    width: 100%;
-    font-size: 14px;
-    padding: 10px;
-  }
+  @media (max-width: 480px) { width: 100%; font-size: 14px; padding: 10px; }
 `;
 
 const Text = styled.p`
@@ -116,7 +101,6 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // Validación básica antes de enviar
     if (!formData.nombre || !formData.apellido || !formData.email || !formData.password) {
       setModalMessage('Campos incompletos');
       setModalDetails('Por favor completa todos los campos obligatorios.');
@@ -137,7 +121,6 @@ const Register = () => {
         carro: { placa: "", cupos: "", marca: "", modelo: "" }
       };
 
-      // ✅ Asegúrate de que la URL de tu backend esté correcta
       const response = await axios.post(
         "https://proyecto5-vs2l.onrender.com/api/users/register",
         newUser,
@@ -154,13 +137,9 @@ const Register = () => {
       console.error("Error en el registro:", error);
 
       let errorMessage = 'Intenta nuevamente más tarde.';
-      if (error.response) {
-        errorMessage = error.response.data?.message || 'Error en el servidor.';
-      } else if (error.request) {
-        errorMessage = 'No se pudo conectar con el servidor.';
-      } else {
-        errorMessage = 'Error al enviar los datos.';
-      }
+      if (error.response) errorMessage = error.response.data?.message || 'Error en el servidor.';
+      else if (error.request) errorMessage = 'No se pudo conectar con el servidor.';
+      else errorMessage = 'Error al enviar los datos.';
 
       setModalMessage('Error al registrarse');
       setModalDetails(errorMessage);
@@ -171,7 +150,7 @@ const Register = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    if (modalType === 'yes') navigate('/register-car');
+    if (modalType === 'yes') navigate('/car-question'); // ← Aquí redirige a CarQuestion
   };
 
   return (
