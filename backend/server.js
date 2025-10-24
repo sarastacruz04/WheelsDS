@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 5000;
 // ✅ 1. Configuración CORS
 // ----------------------------------------------------
 const allowedOrigins = [
-  "https://proyecto9-c03h.onrender.com/", // frontend desplegado
+  "https://proyecto9-c03h.onrender.com", // frontend desplegado
   "http://localhost:5173" // desarrollo local
 ];
 
