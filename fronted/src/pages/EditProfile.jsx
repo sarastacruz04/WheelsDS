@@ -147,9 +147,12 @@ function EditProfile() {
       const response = await axios.put(`${backendURL}/api/users/${form.email}`, form);
 
       // ✅ Actualiza localStorage con los nuevos datos
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      const updatedUser = response.data.user;
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      // ✅ Mostrar alerta y redirigir al Home
       alert("Perfil actualizado exitosamente");
-      navigate("/profile");
+      navigate("/", { replace: true }); // ahora va al Home.jsx
     } catch (error) {
       console.error("Error al actualizar perfil:", error.response?.data || error.message);
       alert(
