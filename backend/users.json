@@ -108,5 +108,19 @@
       "marca": "",
       "modelo": ""
     }
+  },
+  {
+    "nombre": "Diego",
+    "apellido": "Gomez",
+    "idUniversidad": "0000336260",
+    "email": "adiegompap@gmail.com",
+    "telefono": "1234564467",
+    "password": "123456789",
+    "carro": {
+      "placa": "",
+      "cupos": 0,
+      "marca": "",
+      "modelo": ""
+    }
   }
 ]

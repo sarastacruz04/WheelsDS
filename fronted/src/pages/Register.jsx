@@ -1,3 +1,4 @@
+// src/pages/Register.jsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Colors from '../assets/Colors';
@@ -110,21 +111,10 @@ const Register = () => {
   const [modalDetails, setModalDetails] = useState('');
   const [modalType, setModalType] = useState('');
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
-    // Validación básica antes de enviar
-    if (!formData.nombre || !formData.apellido || !formData.email || !formData.password) {
-      setModalMessage('Campos incompletos');
-      setModalDetails('Por favor completa todos los campos obligatorios.');
-      setModalType('no');
-      setShowModal(true);
-      return;
-    }
-
     try {
       const newUser = {
         ...formData,
@@ -136,34 +126,15 @@ const Register = () => {
         password: formData.password.trim(),
         carro: { placa: "", cupos: "", marca: "", modelo: "" }
       };
-
-      // ✅ Asegúrate de que la URL de tu backend esté correcta
-      const response = await axios.post(
-        "https://proyecto-y2t3.vercel.app/api/users/register",
-        newUser,
-        { headers: { "Content-Type": "application/json" } }
-      );
-
+      const response = await axios.post('http://localhost:5000/api/users/register', newUser);
       setModalMessage('Registro exitoso');
-      setModalDetails(response.data.message || 'Tu cuenta fue creada correctamente.');
+      setModalDetails(response.data.message);
       setModalType('yes');
       localStorage.setItem("userEmail", formData.email.trim());
       setShowModal(true);
-
     } catch (error) {
-      console.error("Error en el registro:", error);
-
-      let errorMessage = 'Intenta nuevamente más tarde.';
-      if (error.response) {
-        errorMessage = error.response.data?.message || 'Error en el servidor.';
-      } else if (error.request) {
-        errorMessage = 'No se pudo conectar con el servidor.';
-      } else {
-        errorMessage = 'Error al enviar los datos.';
-      }
-
       setModalMessage('Error al registrarse');
-      setModalDetails(errorMessage);
+      setModalDetails(error.response?.data?.message || 'Intenta nuevamente.');
       setModalType('no');
       setShowModal(true);
     }
