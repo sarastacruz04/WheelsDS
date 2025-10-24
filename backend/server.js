@@ -144,18 +144,18 @@ app.put("/api/users/:email", async (req, res) => {
     const user = await User.findOne({ email: req.params.email });
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
-    // Actualizar solo los campos que envíe el frontend
-    if (nombre) user.nombre = nombre;
-    if (apellido) user.apellido = apellido;
-    if (idUniversidad) user.idUniversidad = idUniversidad;
-    if (telefono) user.telefono = telefono;
+    // Sobrescribir todos los campos recibidos (incluso si son vacíos)
+    user.nombre = nombre ?? user.nombre;
+    user.apellido = apellido ?? user.apellido;
+    user.idUniversidad = idUniversidad ?? user.idUniversidad;
+    user.telefono = telefono ?? user.telefono;
+    
     if (password) {
-      user.password = await bcrypt.hash(password, 10); // encriptar nueva contraseña
+      user.password = await bcrypt.hash(password, 10);
     }
 
     await user.save();
 
-    // ✅ Devolver solo los campos seguros para evitar problemas de login/redirección
     const safeUser = {
       nombre: user.nombre,
       apellido: user.apellido,
