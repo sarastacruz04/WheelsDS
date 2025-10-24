@@ -142,7 +142,7 @@ function EditProfile() {
 
   const handleSave = async () => {
     try {
-      await axios.put(`https://proyecto-1o85-eregwrs3e-diegos-projects-74753126.vercel.app/api/users/${form.email}`, form);
+      await axios.put(`https://proyecto-y2t3.vercel.app/api/users/${form.email}`, form);
       localStorage.setItem("user", JSON.stringify(form));
       alert("Perfil actualizado exitosamente");
       navigate("/profile");

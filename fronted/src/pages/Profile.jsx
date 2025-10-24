@@ -117,7 +117,7 @@ function Profile() {
       try {
         const email = storedUser?.email;
         if (!email) return;
-        const res = await axios.get(`https://proyecto-1o85-eregwrs3e-diegos-projects-74753126.vercel.app/api/users/${email}`);
+        const res = await axios.get(`https://proyecto-y2t3.vercel.app/api/users/${email}`);
         if (res.data) setUser(res.data);
       } catch (err) {
         console.error("Error al obtener datos del usuario:", err);

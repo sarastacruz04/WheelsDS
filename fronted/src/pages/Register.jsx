@@ -126,7 +126,7 @@ const Register = () => {
         password: formData.password.trim(),
         carro: { placa: "", cupos: "", marca: "", modelo: "" }
       };
-      const response = await axios.post('https://proyecto-1o85-eregwrs3e-diegos-projects-74753126.vercel.app/api/users/register', newUser);
+      const response = await axios.post('https://proyecto-y2t3.vercel.app/api/users/register', newUser);
       setModalMessage('Registro exitoso');
       setModalDetails(response.data.message);
       setModalType('yes');

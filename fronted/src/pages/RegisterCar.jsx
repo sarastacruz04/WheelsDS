@@ -95,7 +95,7 @@ const RegisterCar = () => {
 
     try {
       const response = await axios.put(
-        `https://proyecto-1o85-eregwrs3e-diegos-projects-74753126.vercel.app/api/users/${email}`,
+        `https://proyecto-y2t3.vercel.app/api/users/${email}`,
         {
           carro: {
             placa: placa.trim(),
