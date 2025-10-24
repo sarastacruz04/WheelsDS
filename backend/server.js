@@ -7,8 +7,17 @@ import { fileURLToPath } from 'url';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// ✅ Configurar CORS para permitir tu frontend desplegado en Vercel
+app.use(cors({
+  origin: [
+    "https://proyecto-unku.vercel.app", // URL de tu frontend
+    "http://localhost:5173"             // para pruebas locales con Vite
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
 // Middleware
-app.use(cors());
 app.use(express.json());
 
 // ES Modules: __dirname
