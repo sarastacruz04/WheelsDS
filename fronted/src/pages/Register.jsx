@@ -118,13 +118,15 @@ const Register = () => {
         email: formData.email.trim(),
         telefono: formData.telefono.trim(),
         password: formData.password.trim(),
-        carro: { placa: "", cupos: "", marca: "", modelo: "" }
       };
 
       const response = await axios.post(
         "https://proyecto5-vs2l.onrender.com/api/users/register",
         newUser,
-        { headers: { "Content-Type": "application/json" } }
+        { 
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true // importante si tu backend usa cookies
+        }
       );
 
       setModalMessage('Registro exitoso');
@@ -150,7 +152,7 @@ const Register = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    if (modalType === 'yes') navigate('/car-question'); // ← Aquí redirige a CarQuestion
+    if (modalType === 'yes') navigate('/car-question');
   };
 
   return (
