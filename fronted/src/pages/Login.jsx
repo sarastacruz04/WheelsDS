@@ -7,7 +7,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Loader from '../components/common/Loader';
 import FeedbackModal from '../components/common/FeedbackModal';
-import API_BASE_URL from '../config/api';
+
+const API_BASE_URL = "https://proyecto5-vs2l.onrender.com/api"; // backend desplegado
 
 const PageWrapper = styled.div`
   display: flex;
@@ -83,8 +84,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setErrorEmail('');
-    setErrorPassword('');
+    setErrorEmail(''); setErrorPassword('');
 
     if (!email) { setErrorEmail('Ingrese un correo electrónico'); return; }
     if (!password) { setErrorPassword('Ingrese una contraseña'); return; }
@@ -96,13 +96,14 @@ const Login = () => {
         password: password.trim()
       });
 
+      // Guardar datos de usuario en localStorage
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+
       setModalMessage('¡Bienvenido de vuelta!');
       setModalDetails('Serás redirigido a la página principal.');
       setModalType('yes');
       setShowModal(true);
 
-      // Guardar usuario en localStorage
-      localStorage.setItem('user', JSON.stringify(response.data.user));
     } catch (error) {
       console.error(error);
       setModalMessage('Error de Sesión');
@@ -116,61 +117,27 @@ const Login = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    if (modalType === 'yes') navigate('/home'); // Redirige al home
+    if (modalType === 'yes') navigate('/home'); // redirige al home
   };
-
-  const isFormValid = email && password;
 
   return (
     <PageWrapper>
       {loading && <Loader />}
       <Card>
         <Title>Iniciar Sesión</Title>
-        <form
-          style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-          onSubmit={handleLogin}
-        >
-          <Input
-            type="email"
-            placeholder="Correo electrónico"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+        <form style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }} onSubmit={handleLogin}>
+          <Input type="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} />
           {errorEmail && <ErrorText>{errorEmail}</ErrorText>}
-
-          <Input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <Input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} />
           {errorPassword && <ErrorText>{errorPassword}</ErrorText>}
-
           <div style={{ marginTop: '20px', width: '100%' }}>
-            <Button
-              text="Iniciar Sesión"
-              $primary
-              type="submit"
-              disabled={!isFormValid || loading}
-              style={{ width: '100%' }}
-            />
+            <Button text="Iniciar Sesión" $primary type="submit" style={{ width: '100%' }} />
           </div>
         </form>
-
-        <Text>
-          ¿No tienes cuenta? <br />
-          <StyledLink to="/register">Regístrate</StyledLink>
-        </Text>
+        <Text>¿No tienes cuenta? <br /><StyledLink to="/register">Regístrate</StyledLink></Text>
       </Card>
 
-      {showModal && (
-        <FeedbackModal
-          type={modalType}
-          message={modalMessage}
-          details={modalDetails}
-          onClose={handleCloseModal}
-        />
-      )}
+      {showModal && <FeedbackModal type={modalType} message={modalMessage} details={modalDetails} onClose={handleCloseModal} />}
     </PageWrapper>
   );
 };
