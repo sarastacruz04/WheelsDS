@@ -52,16 +52,7 @@ app.post('/api/users/register', (req, res) => {
     return res.status(400).json({ message: 'El correo ya está registrado' });
   }
 
-  const newUser = { 
-    nombre, 
-    apellido, 
-    idUniversidad, 
-    email, 
-    telefono, 
-    password,
-    carro: { placa: '', cupos: '', marca: '', modelo: '' } // 🔹 Inicializa carro vacío
-  };
-  
+  const newUser = { nombre, apellido, idUniversidad, email, telefono, password };
   users.push(newUser);
   saveUsers(users);
 
@@ -92,8 +83,7 @@ app.post('/api/users/login', (req, res) => {
       apellido: user.apellido,
       email: user.email,
       idUniversidad: user.idUniversidad,
-      telefono: user.telefono,
-      carro: user.carro || { placa: '', cupos: '', marca: '', modelo: '' }
+      telefono: user.telefono
     }
   });
 });
@@ -135,30 +125,10 @@ app.put('/api/users/:email', (req, res) => {
   return res.status(200).json({ message: 'Usuario actualizado correctamente', user: users[index] });
 });
 
-
-// ✅ NUEVA RUTA: Verificar si el usuario tiene carro
-app.get('/api/users/:email/hascar', (req, res) => {
-  const { email } = req.params;
-  const users = readUsers();
-
-  const user = users.find(
-    (u) => u.email.trim().toLowerCase() === email.trim().toLowerCase()
-  );
-
-  if (!user) {
-    return res.status(404).json({ message: 'Usuario no encontrado' });
-  }
-
-  const car = user.carro || {};
-  const hasCar =
-    car.placa?.trim() !== '' &&
-    car.marca?.trim() !== '' &&
-    car.modelo?.trim() !== '' &&
-    car.cupos;
-
-  return res.status(200).json({ hasCar });
+// ✅ Mensaje personalizado en la raíz
+app.get('/', (req, res) => {
+  res.send('Backend del proyecto');
 });
-
 
 // Iniciar servidor
 app.listen(PORT, () => {
