@@ -137,9 +137,9 @@ const Register = () => {
         carro: { placa: "", cupos: "", marca: "", modelo: "" }
       };
 
-      // ✅ Asegúrate de que la URL de tu backend esté correcta
+      // ✅ URL de tu backend
       const response = await axios.post(
-        "https://proyecto-y2t3.vercel.app/api/users/register",
+        "https://proyecto5-vs2l.onrender.com/api/users/register",
         newUser,
         { headers: { "Content-Type": "application/json" } }
       );
@@ -171,7 +171,8 @@ const Register = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    if (modalType === 'yes') navigate('/register-car');
+    // 🔹 Navegación al CarQuestion en vez de RegisterCar
+    if (modalType === 'yes') navigate('/car-question');
   };
 
   return (
