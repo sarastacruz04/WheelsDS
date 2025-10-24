@@ -1,4 +1,3 @@
-// src/pages/Register.jsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Colors from '../assets/Colors';
@@ -138,7 +137,7 @@ const Register = () => {
         carro: { placa: "", cupos: "", marca: "", modelo: "" }
       };
 
-      // ✅ Backend correcto
+      // ✅ Asegúrate de que la URL de tu backend esté correcta
       const response = await axios.post(
         "https://proyecto5-vs2l.onrender.com/api/users/register",
         newUser,
@@ -172,7 +171,7 @@ const Register = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    if (modalType === 'yes') navigate('/car-question'); // 🔹 ahora va a CarQuestion
+    if (modalType === 'yes') navigate('/register-car');
   };
 
   return (
