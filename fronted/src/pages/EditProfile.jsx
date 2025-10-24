@@ -142,9 +142,10 @@ function EditProfile() {
 
   const handleSave = async () => {
     try {
-      const backendURL = "https://proyecto9-c03h.onrender.com";
+      // URL del backend correctamente
+      const backendURL = "https://proyecto5-vs2l.onrender.com/api";
 
-      const response = await axios.put(`${backendURL}/api/users/${form.email}`, form);
+      const response = await axios.put(`${backendURL}/users/${form.email}`, form);
 
       // Guardar datos actualizados en localStorage (sin contraseña)
       const updatedUser = response.data.user;
