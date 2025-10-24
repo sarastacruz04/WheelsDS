@@ -12,6 +12,7 @@ const EditContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+
   @media (max-width: 768px) { padding: 20px; }
   @media (max-width: 480px) { padding: 10px; }
 `;
@@ -23,6 +24,7 @@ const FormCard = styled.div`
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   width: 400px;
   max-width: 90%;
+
   @media (max-width: 768px) { padding: 25px 30px; width: 100%; }
   @media (max-width: 480px) { padding: 20px 20px; }
 `;
@@ -31,6 +33,7 @@ const Title = styled.h2`
   color: ${colors.primary};
   text-align: center;
   margin-bottom: 20px;
+
   @media (max-width: 480px) { font-size: 20px; margin-bottom: 15px; }
 `;
 
@@ -39,6 +42,7 @@ const Label = styled.label`
   margin-bottom: 5px;
   font-weight: 600;
   color: ${colors.text};
+
   @media (max-width: 480px) { font-size: 14px; }
 `;
 
@@ -48,6 +52,7 @@ const Input = styled.input`
   margin-bottom: 15px;
   border-radius: 8px;
   border: 1px solid #ccc;
+
   @media (max-width: 480px) { padding: 8px; }
 `;
 
@@ -55,6 +60,7 @@ const ButtonGroup = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 10px;
+
   @media (max-width: 480px) { flex-direction: column; gap: 10px; }
 `;
 
@@ -68,6 +74,7 @@ const SaveButton = styled.button`
   font-weight: 600;
   cursor: pointer;
   &:hover { background-color: #4a5d72; }
+
   @media (max-width: 480px) { padding: 8px; }
 `;
 
@@ -81,6 +88,7 @@ const CancelButton = styled.button`
   font-weight: 600;
   cursor: pointer;
   &:hover { background-color: #435d75ff; }
+
   @media (max-width: 480px) { padding: 8px; }
 `;
 
@@ -90,7 +98,7 @@ function EditProfile() {
     nombre: "",
     apellido: "",
     email: "",
-    password: "", // Siempre vacío al cargar
+    password: "", // siempre vacío al cargar
   });
 
   useEffect(() => {
@@ -114,7 +122,7 @@ function EditProfile() {
     try {
       const backendURL = "https://proyecto5-vs2l.onrender.com/api";
 
-      // Solo enviamos password si el usuario escribió algo
+      // Solo enviar campos modificados y contraseña si se cambió
       const payload = {
         nombre: form.nombre,
         apellido: form.apellido,
@@ -123,16 +131,15 @@ function EditProfile() {
         payload.password = form.password;
       }
 
-      const response = await axios.put(
-        `${backendURL}/users/${form.email.trim()}`,
-        payload
-      );
+      const response = await axios.put(`${backendURL}/users/${form.email.trim()}`, payload);
 
-      // Guardamos solo los datos seguros en localStorage (sin password)
+      // Guardar solo datos seguros en localStorage
       const updatedUser = response.data.user;
       localStorage.setItem("user", JSON.stringify(updatedUser));
 
       alert("Perfil actualizado exitosamente");
+
+      // Redirigir al Home
       navigate("/", { replace: true });
     } catch (error) {
       console.error("Error al actualizar perfil:", error.response?.data || error.message);
