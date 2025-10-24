@@ -142,33 +142,21 @@ function EditProfile() {
 
   const handleSave = async () => {
     try {
-      const backendURL = "https://proyecto5-vs2l.onrender.com/api";
+      // URL del backend correctamente
+      const backendURL = "https://proyecto5-vs2l.onrender.com/";
 
-      // Solo enviar los campos que el usuario modificó
-      const payload = {
-        nombre: form.nombre,
-        apellido: form.apellido,
-      };
-      if (form.password.trim() !== "") {
-        payload.password = form.password;
-      }
-
-      const response = await axios.put(
-        `${backendURL}/users/${form.email.trim()}`,
-        payload
-      );
+      const response = await axios.put(`${backendURL}/users/${form.email}`, form);
 
       // Guardar datos actualizados en localStorage (sin contraseña)
       const updatedUser = response.data.user;
       localStorage.setItem("user", JSON.stringify(updatedUser));
 
       alert("Perfil actualizado exitosamente");
+
+      // Redirigir al Home
       navigate("/", { replace: true });
     } catch (error) {
-      console.error(
-        "Error al actualizar perfil:",
-        error.response?.data || error.message
-      );
+      console.error("Error al actualizar perfil:", error.response?.data || error.message);
       alert(
         error.response?.data?.message ||
           "Hubo un problema al guardar los cambios"
@@ -198,7 +186,12 @@ function EditProfile() {
         />
 
         <Label>Correo</Label>
-        <Input type="email" name="email" value={form.email} readOnly />
+        <Input
+          type="email"
+          name="email"
+          value={form.email}
+          readOnly
+        />
 
         <Label>Contraseña</Label>
         <Input
@@ -206,12 +199,15 @@ function EditProfile() {
           name="password"
           value={form.password}
           onChange={handleChange}
-          placeholder="Dejar vacío si no cambia"
         />
 
         <ButtonGroup>
-          <CancelButton onClick={() => navigate("/profile")}>Cancelar</CancelButton>
-          <SaveButton onClick={handleSave}>Guardar cambios</SaveButton>
+          <CancelButton onClick={() => navigate("/profile")}>
+            Cancelar
+          </CancelButton>
+          <SaveButton onClick={handleSave}>
+            Guardar cambios
+          </SaveButton>
         </ButtonGroup>
       </FormCard>
     </EditContainer>
