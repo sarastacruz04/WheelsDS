@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Colors from "../assets/Colors";
 import Button from "../components/common/Button";
+import { useNavigate } from "react-router-dom"; // 🔹 IMPORTACIÓN FALTANTE
 
 // --- Estilos ---
 const PageWrapper = styled.div`
