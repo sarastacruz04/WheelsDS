@@ -1,146 +1,221 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import Colors from '../assets/Colors';
-import Button from '../components/common/Button';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import FeedbackModal from '../components/common/FeedbackModal';
-import API_BASE_URL from '../config/api';
+// src/pages/EditProfile.jsx
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import colors from "../assets/Colors";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const PageWrapper = styled.div`
+const EditContainer = styled.div`
+  padding: 40px;
+  background-color: #f8fafc;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: ${Colors.pageBackground};
-  padding: 20px;
-  @media (max-width: 768px) { padding: 15px; }
-  @media (max-width: 480px) { padding: 10px; }
+
+  @media (max-width: 768px) {
+    padding: 20px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px;
+  }
 `;
 
-const Card = styled.div`
-  background-color: ${Colors.white};
-  padding: 50px 60px;
+const FormCard = styled.div`
+  background: white;
   border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  min-width: 400px;
-  border: 1px solid ${Colors.primary};
-  @media (max-width: 768px) { padding: 40px 30px; width: 100%; max-width: 450px; }
-  @media (max-width: 480px) { padding: 30px 20px; }
+  padding: 30px 40px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  width: 400px;
+  max-width: 90%;
+
+  @media (max-width: 768px) {
+    padding: 25px 30px;
+    width: 100%;
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px 20px;
+  }
 `;
 
-const Title = styled.h1`
-  color: ${Colors.primary};
-  font-size: 26px;
-  margin-bottom: 25px;
-  @media (max-width: 480px) { font-size: 22px; margin-bottom: 20px; }
+const Title = styled.h2`
+  color: ${colors.primary};
+  text-align: center;
+  margin-bottom: 20px;
+
+  @media (max-width: 480px) {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
 `;
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`;
+const Label = styled.label`
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: ${colors.text};
 
-const Row = styled.div`
-  display: flex;
-  gap: 10px;
-  @media (max-width: 480px) { flex-direction: column; }
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
 `;
 
 const Input = styled.input`
-  flex: 1;
-  padding: 12px;
-  border: 1.8px solid ${Colors.primary};
-  border-radius: 6px;
-  font-size: 15px;
+  width: 100%;
+  padding: 10px;
   margin-bottom: 15px;
-  outline: none;
-  &::placeholder { color: #999; }
-  @media (max-width: 480px) { width: 100%; font-size: 14px; padding: 10px; }
+  border-radius: 8px;
+  border: 1px solid #ccc;
+
+  @media (max-width: 480px) {
+    padding: 8px;
+  }
 `;
 
-const Text = styled.p`
-  margin-top: 15px;
-  font-size: 14px;
-  color: ${Colors.primary};
-  text-align: center;
-  @media (max-width: 480px) { font-size: 13px; }
+const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 10px;
+  }
 `;
 
-const StyledLink = styled(Link)`
-  color: blue;
-  text-decoration: none;
-  font-weight: 500;
-  &:hover { text-decoration: underline; }
+const SaveButton = styled.button`
+  flex: 1;
+  background-color: ${colors.primary};
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  &:hover {
+    background-color: #4a5d72;
+  }
+
+  @media (max-width: 480px) {
+    padding: 8px;
+  }
 `;
 
-const Register = () => {
+const CancelButton = styled.button`
+  flex: 1;
+  background-color: ${colors.details};
+  color: black;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  &:hover {
+    background-color: #435d75ff;
+  }
+
+  @media (max-width: 480px) {
+    padding: 8px;
+  }
+`;
+
+function EditProfile() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ nombre: '', apellido: '', idUniversidad: '', email: '', telefono: '', password: '' });
-  const [showModal, setShowModal] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
-  const [modalDetails, setModalDetails] = useState('');
-  const [modalType, setModalType] = useState('');
+  const [form, setForm] = useState({
+    nombre: "",
+    apellido: "",
+    email: "",
+    password: "",
+  });
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) setForm(storedUser);
+  }, []);
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = async () => {
     try {
-      const newUser = {
-        ...formData,
-        nombre: formData.nombre.trim(),
-        apellido: formData.apellido.trim(),
-        idUniversidad: formData.idUniversidad.trim(),
-        email: formData.email.trim(),
-        telefono: formData.telefono.trim(),
-        password: formData.password.trim(),
-        carro: { placa: "", cupos: "", marca: "", modelo: "" }
+      const backendURL = "https://proyecto5-vs2l.onrender.com/api";
+
+      // Solo enviar los campos que el usuario modificó
+      const payload = {
+        nombre: form.nombre,
+        apellido: form.apellido,
       };
-      const response = await axios.post(`${API_BASE_URL}/users/register`, newUser);
-      setModalMessage('Registro exitoso');
-      setModalDetails(response.data.message);
-      setModalType('yes');
-      localStorage.setItem("userEmail", formData.email.trim());
-      setShowModal(true);
+      if (form.password.trim() !== "") {
+        payload.password = form.password;
+      }
+
+      const response = await axios.put(
+        `${backendURL}/users/${form.email.trim()}`,
+        payload
+      );
+
+      // Guardar datos actualizados en localStorage (sin contraseña)
+      const updatedUser = response.data.user;
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      alert("Perfil actualizado exitosamente");
+      navigate("/", { replace: true });
     } catch (error) {
-      setModalMessage('Error al registrarse');
-      setModalDetails(error.response?.data?.message || 'Intenta nuevamente.');
-      setModalType('no');
-      setShowModal(true);
+      console.error(
+        "Error al actualizar perfil:",
+        error.response?.data || error.message
+      );
+      alert(
+        error.response?.data?.message ||
+          "Hubo un problema al guardar los cambios"
+      );
     }
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    if (modalType === 'yes') navigate('/register-car');
-  };
-
   return (
-    <PageWrapper>
-      <Card>
-        <Title>Registro</Title>
-        <Form onSubmit={handleRegister}>
-          <Row>
-            <Input name="nombre" placeholder="Nombre" value={formData.nombre} onChange={handleChange} />
-            <Input name="apellido" placeholder="Apellido" value={formData.apellido} onChange={handleChange} />
-          </Row>
-          <Input name="idUniversidad" placeholder="ID de la Universidad" value={formData.idUniversidad} onChange={handleChange} />
-          <Input name="email" type="email" placeholder="Correo Electrónico" value={formData.email} onChange={handleChange} />
-          <Input name="telefono" placeholder="Teléfono" value={formData.telefono} onChange={handleChange} />
-          <Input name="password" type="password" placeholder="Contraseña" value={formData.password} onChange={handleChange} />
-          <Button text="Registrarse" $primary type="submit" style={{ width: '100%' }} />
-        </Form>
-        <Text>¿Ya tienes una cuenta?</Text>
-        <StyledLink to="/login">Inicia Sesión</StyledLink>
-      </Card>
-      {showModal && <FeedbackModal type={modalType} message={modalMessage} details={modalDetails} onClose={handleCloseModal} />}
-    </PageWrapper>
-  );
-};
+    <EditContainer>
+      <FormCard>
+        <Title>Editar Perfil</Title>
 
-export default Register;
+        <Label>Nombre</Label>
+        <Input
+          type="text"
+          name="nombre"
+          value={form.nombre}
+          onChange={handleChange}
+        />
+
+        <Label>Apellido</Label>
+        <Input
+          type="text"
+          name="apellido"
+          value={form.apellido}
+          onChange={handleChange}
+        />
+
+        <Label>Correo</Label>
+        <Input type="email" name="email" value={form.email} readOnly />
+
+        <Label>Contraseña</Label>
+        <Input
+          type="password"
+          name="password"
+          value={form.password}
+          onChange={handleChange}
+          placeholder="Dejar vacío si no cambia"
+        />
+
+        <ButtonGroup>
+          <CancelButton onClick={() => navigate("/profile")}>Cancelar</CancelButton>
+          <SaveButton onClick={handleSave}>Guardar cambios</SaveButton>
+        </ButtonGroup>
+      </FormCard>
+    </EditContainer>
+  );
+}
+
+export default EditProfile;
