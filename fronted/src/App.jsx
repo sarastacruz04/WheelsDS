@@ -116,6 +116,12 @@ function App() {
           />
           <Route path="/reserved-travelTittle" element={<ReservedTravelTittle />} />
           <Route path="/current-travel" element={<CurrentTravel />} />
+
+          {/* 🆕🔹 AÑADIDO al final: seguridad extra para /verify-car */}
+          <Route
+            path="/verify-car"
+            element={isAuthenticated ? <VerifyCar /> : <Navigate to="/login" />}
+          />
         </Routes>
       </Layout>
     </Router>
