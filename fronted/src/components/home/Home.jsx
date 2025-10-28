@@ -328,7 +328,8 @@ return (
                         alt="Foto de perfil"
                         onClick={() => setMenuOpen(!menuOpen)}
                     />
-                    <SwitchButton onClick={() => navigate('/car-question')}>
+                    {/* 🔹 Aquí se cambia solo la navegación a /verify-car */}
+                    <SwitchButton onClick={() => navigate('/verify-car')}>
                         Cambiar a Conductor
                     </SwitchButton> {/* 🆕 Nuevo botón */}
                     <DropdownMenu open={menuOpen}>
