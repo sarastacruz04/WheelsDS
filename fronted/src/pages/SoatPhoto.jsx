@@ -74,7 +74,7 @@ const SoatPhoto = () => {
   const navigate = useNavigate();
 
   const handleNext = () => {
-    navigate("/homedrive");
+    navigate("/home-driver");
   };
 
   return (
