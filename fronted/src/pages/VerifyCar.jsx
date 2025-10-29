@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Colors from "../assets/Colors";
 import Button from "../components/common/Button";
+import { useNavigate } from "react-router-dom"; // ✅ agregado
 
 const PageWrapper = styled.div`
   display: flex;
@@ -85,9 +86,9 @@ const VerifyCar = () => {
     }
 
     if (answer === "si") {
-      navigate("/home-driver");
+      navigate("/home-driver"); // ✅ SI → HomeDriver
     } else {
-      navigate("/register-car");
+      navigate("/car-question"); // ✅ NO → CarQuestion
     }
   };
 

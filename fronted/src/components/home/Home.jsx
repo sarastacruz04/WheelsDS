@@ -62,7 +62,7 @@ const ProfileContainer = styled.div`
     position: relative;
     display: flex;
     align-items: center;
-    gap: 15px; /* 🔹 Añadido espacio entre foto y botón */
+    gap: 15px;
 `;
 
 const ProfileImage = styled.img`
@@ -106,7 +106,6 @@ const DropdownItem = styled.div`
     }
 `;
 
-// 🆕 🔹 Botón para cambiar a modo conductor
 const SwitchButton = styled.button`
   background-color: ${colors.primary};
   color: ${colors.white};
@@ -123,7 +122,6 @@ const SwitchButton = styled.button`
   }
 `;
 
-// 🟩 Menú de navegación interno
 const NavMenu = styled.div`
   display: flex;
   justify-content: center;
@@ -328,9 +326,10 @@ return (
                         alt="Foto de perfil"
                         onClick={() => setMenuOpen(!menuOpen)}
                     />
-                    <SwitchButton onClick={() => navigate('/car-question')}>
+                    {/* ✅ Aquí el cambio solicitado */}
+                    <SwitchButton onClick={() => navigate('/verify-car')}>
                         Cambiar a Conductor
-                    </SwitchButton> {/* 🆕 Nuevo botón */}
+                    </SwitchButton>
                     <DropdownMenu open={menuOpen}>
                         <DropdownItem onClick={() => navigate('/profile')}>Ver perfil</DropdownItem>
                         <DropdownItem onClick={() => navigate('/edit-profile')}>Editar datos</DropdownItem>
