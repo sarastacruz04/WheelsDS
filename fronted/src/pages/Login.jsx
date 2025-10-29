@@ -130,7 +130,7 @@ const Login = () => {
           {errorEmail && <ErrorText>{errorEmail}</ErrorText>}
           <Input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} />
           {errorPassword && <ErrorText>{errorPassword}</ErrorText>}
-          <div style={{ marginTop: '20px', width: '100%' }}>
+          <div style={{ marginTop: '20px', width: '50%' }}>
             <Button text="Iniciar Sesión" $primary type="submit" style={{ width: '100%' }} />
           </div>
         </form>

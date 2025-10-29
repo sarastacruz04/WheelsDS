@@ -19,6 +19,7 @@ const StyledWrapper = styled.div`
   top: 0;
   left: 0;
   z-index: 1000;
+  
 
   .spinner {
     font-size: 28px;

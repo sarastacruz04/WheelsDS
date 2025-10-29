@@ -1,4 +1,4 @@
-// src/pages/LandingPage.jsx
+// src/pages/LandingPage.jsx el inicio de sesion o registro
 import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
@@ -65,6 +65,8 @@ const ButtonsContainer = styled.div`
   gap: 15px;
   width: 100%;
   align-items: center;
+  max-width: 250px; /* Limita el ancho máximo para que parezca centrado */
+  margin: 0 auto; /* Centra el contenedor de botones dentro de la Card */
 
   @media (max-width: 480px) {
     gap: 10px;
@@ -77,11 +79,11 @@ const LandingPage = () => {
       <Card>
         <Logo src={logo} alt="Logo" />
         <ButtonsContainer>
-          <Link to="/login" style={{ textDecoration: 'none', width: '100%' }}>
+          <Link to="/login" style={{ textDecoration: 'none', width: '80%' }}>
             <Button text="Iniciar Sesión" $primary style={{ width: '100%' }} />
           </Link>
 
-          <Link to="/register" style={{ textDecoration: 'none', width: '100%' }}>
+          <Link to="/register" style={{ textDecoration: 'none', width: '70%' }}>
             <Button text="Registrarse" style={{ width: '100%' }} />
           </Link>
         </ButtonsContainer>

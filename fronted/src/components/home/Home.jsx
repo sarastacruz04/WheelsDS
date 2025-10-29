@@ -13,6 +13,19 @@ import iconReservedTravel from "../../assets/ReservedTravel.png";
 import iconCurrentTravel from "../../assets/CurrentTravel.png";
 import ReservedTravel from '../trips/ApiReserveTravel.jsx';
 
+// fronted/src/components/home/Home.jsx (NUEVO ESTILO)
+
+const CenteredContent = styled.div`
+    max-width: 1280px; /* Limita el ancho del contenido interno */
+    margin: 0 auto;    /* Centra el contenido en la pantalla */
+    width: 100%;       /* Asegura que ocupe todo el espacio disponible hasta el max-width */
+    padding: 0 40px;   /* Añade un margen interno de 40px a los lados para diseño */
+    
+    @media (max-width: 768px) {
+        padding: 0 20px;
+    }
+`;
+
 // --- Estilos de la Página ---
 const HomeContainer = styled.div`
     background-color: ${colors.white};
@@ -26,8 +39,9 @@ const HeaderContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
-  padding: 20px 40px 0;
+  padding: 20px 0 0;
   background-color: ${colors.white};
+  overflow-x: hidden;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -38,7 +52,7 @@ const HeaderContainer = styled.div`
 
 const ContentWrapper = styled.div`
     flex-grow: 1;
-    padding: 20px 40px;
+    padding: 20px 0;
     background-color: #f0f4f7;
 
     @media (max-width: 768px) {
@@ -168,7 +182,7 @@ const NavButton = styled.button`
 const SearchBarContainer = styled.div`
     background-color: #d8e2ed;
     border-radius: 10px;
-    padding: 20px;
+    padding: 20px 0;
     margin-bottom: 30px;
     display: flex;
     gap: 15px;
@@ -317,100 +331,105 @@ function Home() {
 
 return (
         <HomeContainer>
-            <HeaderContainer>
-                <LeftSection>
-                    <Logo src={logo} alt="Campus GO Logo" />
-                </LeftSection>
+            <CenteredContent>
+                <HeaderContainer>
+                    <LeftSection>
+                        <Logo src={logo} alt="Campus GO Logo" />
+                    </LeftSection>
 
-                <ProfileContainer>
-                    <ProfileImage 
-                        src={profilePhoto} 
-                        alt="Foto de perfil"
-                        onClick={() => setMenuOpen(!menuOpen)}
-                    />
-                    <SwitchButton onClick={() => navigate('/car-question')}>
-                        Cambiar a Conductor
-                    </SwitchButton> {/* 🆕 Nuevo botón */}
-                    <DropdownMenu open={menuOpen}>
-                        <DropdownItem onClick={() => navigate('/profile')}>Ver perfil</DropdownItem>
-                        <DropdownItem onClick={() => navigate('/edit-profile')}>Editar datos</DropdownItem>
-                    </DropdownMenu>
-                </ProfileContainer>
-            </HeaderContainer>
+                    <ProfileContainer>
+                        <ProfileImage 
+                            src={profilePhoto} 
+                            alt="Foto de perfil"
+                            onClick={() => setMenuOpen(!menuOpen)}
+                        />
+                        <SwitchButton onClick={() => navigate('/car-question')}>
+                            Cambiar a Conductor
+                        </SwitchButton> {/* 🆕 Nuevo botón */}
+                        <DropdownMenu open={menuOpen}>
+                            <DropdownItem onClick={() => navigate('/profile')}>Ver perfil</DropdownItem>
+                            <DropdownItem onClick={() => navigate('/edit-profile')}>Editar datos</DropdownItem>
+                        </DropdownMenu>
+                    </ProfileContainer>
+                </HeaderContainer>
 
-            <NavMenu>
-                <NavButton $active={activeTab === "home"} onClick={() => setActiveTab("home")}>
-                    <img src={iconHome} alt="home" style={{ width: "18px", height: "18px", marginRight: "8px" }} />
-                    Inicio
-                </NavButton>
-                <NavButton $active={activeTab === "reserved"} onClick={() => setActiveTab("reserved")}>
-                    <img src={iconReservedTravel} alt="reserved" style={{ width: "18px", height: "18px", marginRight: "8px" }} />
-                    Viajes reservados
-                </NavButton>
-                <NavButton $active={activeTab === "current"} onClick={() => setActiveTab("current")}>
-                    <img src={iconCurrentTravel} alt="current" style={{ width: "18px", height: "18px", marginRight: "8px" }} />
-                    Viajes en curso
-                </NavButton>
-            </NavMenu>
+                <NavMenu>
+                    <NavButton $active={activeTab === "home"} onClick={() => setActiveTab("home")}>
+                        <img src={iconHome} alt="home" style={{ width: "18px", height: "18px", marginRight: "8px" }} />
+                        Inicio
+                    </NavButton>
+                    <NavButton $active={activeTab === "reserved"} onClick={() => setActiveTab("reserved")}>
+                        <img src={iconReservedTravel} alt="reserved" style={{ width: "18px", height: "18px", marginRight: "8px" }} />
+                        Viajes reservados
+                    </NavButton>
+                    <NavButton $active={activeTab === "current"} onClick={() => setActiveTab("current")}>
+                        <img src={iconCurrentTravel} alt="current" style={{ width: "18px", height: "18px", marginRight: "8px" }} />
+                        Viajes en curso
+                    </NavButton>
+                </NavMenu>
+            </CenteredContent>
 
-        <ContentWrapper>
-            {activeTab === "home" && (
-                <>
-                <SearchBarContainer>
-                    <GreetingLeft>¡Buen viaje {userName || "Pasajero"}!</GreetingLeft>
+            <ContentWrapper>
+                <CenteredContent>
 
-                    <Selector value={sector} onChange={(e) => setSector(e.target.value)}>
-                        <option value="">Sectores</option>
-                        <option value="Colina">Colina</option>
-                        <option value="Calle 116">Calle 116</option>
-                        <option value="Samaria Chía">Samaria Chía</option>
-                        <option value="Huertas Cajicá">Huertas Cajicá</option>
-                    </Selector>
+                    {activeTab === "home" && (
+                        <>
+                        <SearchBarContainer>
+                            <GreetingLeft>¡Buen viaje {userName || "Pasajero"}!</GreetingLeft>
 
-                    <SearchInput
-                        type="number"
-                        placeholder="Cantidad de puestos disponibles"
-                        min="1"
-                        value={puestos}
-                        onChange={(e) => setPuestos(e.target.value)}
-                    />
+                            <Selector value={sector} onChange={(e) => setSector(e.target.value)}>
+                                <option value="">Sectores</option>
+                                <option value="Colina">Colina</option>
+                                <option value="Calle 116">Calle 116</option>
+                                <option value="Samaria Chía">Samaria Chía</option>
+                                <option value="Huertas Cajicá">Huertas Cajicá</option>
+                            </Selector>
 
-                    <ActionButton onClick={handleSearch}>
-                        <FontAwesomeIcon icon={faCar} /> Buscar
-                    </ActionButton>
-                </SearchBarContainer>
+                            <SearchInput
+                                type="number"
+                                placeholder="Cantidad de puestos disponibles"
+                                min="1"
+                                value={puestos}
+                                onChange={(e) => setPuestos(e.target.value)}
+                            />
 
-                <TripCardGrid>
-                    {filteredTrips.map((trip) => (
-                    <TripCard
-                        key={trip.id}
-                        sector={trip.sector}
-                        conductor={trip.conductor}
-                        desde={trip.desde}
-                        para={trip.para}
-                        horaSalida={trip.horaSalida}
-                        valor={trip.valor}
-                        cupos={trip.cupos}
-                        onReserve={() => handleReserveStart(trip)}
-                    />
-                    ))}
-                </TripCardGrid>
-                </>
-            )}
+                            <ActionButton onClick={handleSearch}>
+                                <FontAwesomeIcon icon={faCar} /> Buscar
+                            </ActionButton>
+                        </SearchBarContainer>
 
-            {activeTab === "reserved" && (
-                <h3 style={{ textAlign: "center", color: colors.text }}>
-                    🚗 Aquí verás tus viajes reservados.
-                </h3>
-            )}
+                        <TripCardGrid>
+                            {filteredTrips.map((trip) => (
+                            <TripCard
+                                key={trip.id}
+                                sector={trip.sector}
+                                conductor={trip.conductor}
+                                desde={trip.desde}
+                                para={trip.para}
+                                horaSalida={trip.horaSalida}
+                                valor={trip.valor}
+                                cupos={trip.cupos}
+                                onReserve={() => handleReserveStart(trip)}
+                            />
+                            ))}
+                        </TripCardGrid>
+                        </>
+                    )}
 
-            {activeTab === "current" && (
-                <h3 style={{ textAlign: "center", color: colors.text }}>
-                    🛣️ Aquí verás tus viajes en curso.
-                </h3>
-            )}
-        </ContentWrapper>
-    </HomeContainer>
+                    {activeTab === "reserved" && (
+                        <h3 style={{ textAlign: "center", color: colors.text }}>
+                            🚗 Aquí verás tus viajes reservados.
+                        </h3>
+                    )}
+
+                    {activeTab === "current" && (
+                        <h3 style={{ textAlign: "center", color: colors.text }}>
+                            🛣️ Aquí verás tus viajes en curso.
+                        </h3>
+                    )}
+                </CenteredContent>
+            </ContentWrapper>
+        </HomeContainer>
 );
 }
 
