@@ -261,15 +261,24 @@ function HomeDriver() {
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
   const [price, setPrice] = useState('');
+  const [trips, setTrips] = useState([]);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
+
     if (storedUser && storedUser.nombre) {
       setUserName(`${storedUser.nombre} ${storedUser.apellido || ""}`);
     }
   }, []);
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser?.trips) {
+      setTrips(storedUser.trips);
+    }
+  }, [activeTab]); // ✅ Recarga al cambiar a "Viajes creados"
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -367,9 +376,32 @@ function HomeDriver() {
           )}
 
           {activeTab === "reserved" && (
-            <h3 style={{ textAlign: "center", color: colors.text }}>
-              📋 Aquí podrás ver los viajes que has creado.
-            </h3>
+            <>
+              <h3 style={{ textAlign: "center", color: colors.text, marginBottom: "20px" }}>
+                📋 Tus viajes creados
+              </h3>
+
+              {trips.length === 0 ? (
+                <p style={{ textAlign: "center", color: colors.text }}>
+                  Aún no has creado viajes 😢
+                </p>
+              ) : (
+                trips.map((trip, index) => (
+                  <div key={index} style={{ 
+                    background: "white",
+                    padding: "15px",
+                    borderRadius: "10px",
+                    marginBottom: "10px",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
+                  }}>
+                    <p><strong>Desde:</strong> {trip.fromLocation}</p>
+                    <p><strong>Hasta:</strong> {trip.toLocation}</p>
+                    <p><strong>Hora:</strong> {trip.departureTime}</p>
+                    <p><strong>Precio:</strong> ${trip.price}</p>
+                  </div>
+                ))
+              )}
+            </>
           )}
 
           {activeTab === "current" && (
