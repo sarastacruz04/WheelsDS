@@ -10,9 +10,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ----------------------------------------------------
-// ✅ 1. Configuración CORS
-// ----------------------------------------------------
+// ✅ Configuración CORS
 const allowedOrigins = [
   "https://proyecto9-c03h.onrender.com",
   "http://localhost:5173"
@@ -20,7 +18,7 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // Postman o requests sin origin
+    if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) callback(null, true);
     else callback(new Error("No permitido por CORS"));
   },
@@ -32,19 +30,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// ----------------------------------------------------
-// ✅ 2. Conexión a MongoDB Atlas
-// ----------------------------------------------------
-const uri = process.env.MONGO_URI;
-
-mongoose
-  .connect(uri)
+// ✅ Conexión MongoDB
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ Conectado a MongoDB Atlas"))
-  .catch((err) => console.error("❌ Error al conectar con MongoDB:", err));
+  .catch(err => console.error("❌ Error al conectar MongoDB:", err));
 
-// ----------------------------------------------------
-// ✅ 3. Esquema y modelo de usuarios
-// ----------------------------------------------------
+// ✅ Schema actualizado con datos del carro
 const userSchema = new mongoose.Schema({
   nombre: { type: String, required: true },
   apellido: { type: String, required: true },
@@ -52,15 +43,18 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   telefono: String,
   password: { type: String, required: true },
-});
+
+  // 🚗 Campos del carro NUEVOS
+  placa: { type: String, default: "" },
+  cupos: { type: Number, default: 0 },
+  marca: { type: String, default: "" },
+  modelo: { type: String, default: "" },
+}, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);
 
-// ----------------------------------------------------
-// ✅ 4. Rutas de usuarios
-// ----------------------------------------------------
 
-// Registro
+// ✅ Registro
 app.post("/api/users/register", async (req, res) => {
   try {
     const { nombre, apellido, idUniversidad, email, telefono, password } = req.body;
@@ -69,12 +63,9 @@ app.post("/api/users/register", async (req, res) => {
       return res.status(400).json({ message: "Faltan campos obligatorios" });
     }
 
-    const userExistente = await User.findOne({ email });
-    if (userExistente) {
-      return res.status(400).json({ message: "El correo ya está registrado" });
-    }
+    const existente = await User.findOne({ email });
+    if (existente) return res.status(400).json({ message: "El correo ya está registrado" });
 
-    // Encriptar contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const nuevoUsuario = new User({
@@ -84,32 +75,34 @@ app.post("/api/users/register", async (req, res) => {
       email,
       telefono,
       password: hashedPassword,
+      placa: req.body.placa || "",
+      cupos: req.body.cupos || 0,
+      marca: req.body.marca || "",
+      modelo: req.body.modelo || ""
     });
 
     await nuevoUsuario.save();
     res.status(201).json({ message: "Usuario registrado exitosamente" });
+
   } catch (error) {
-    console.error("Error al registrar usuario:", error);
     res.status(500).json({ message: "Error en el servidor" });
+    console.error(error);
   }
 });
 
-// Login
+
+// ✅ Login
 app.post("/api/users/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    if (!email || !password)
-      return res.status(400).json({ message: "Faltan campos" });
-
     const user = await User.findOne({ email });
+
     if (!user) return res.status(401).json({ message: "Correo o contraseña incorrectos" });
 
-    // Comparar contraseña
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "Correo o contraseña incorrectos" });
 
-    res.status(200).json({
+    res.json({
       message: "Login exitoso",
       user: {
         nombre: user.nombre,
@@ -117,15 +110,23 @@ app.post("/api/users/login", async (req, res) => {
         email: user.email,
         idUniversidad: user.idUniversidad,
         telefono: user.telefono,
-      },
+
+        // ✅ También enviamos datos del carro en login
+        placa: user.placa,
+        cupos: user.cupos,
+        marca: user.marca,
+        modelo: user.modelo,
+      }
     });
+
   } catch (error) {
-    console.error("Error en login:", error);
+    console.error(error);
     res.status(500).json({ message: "Error en el servidor" });
   }
 });
 
-// Obtener usuario
+
+// ✅ Obtener usuario
 app.get("/api/users/:email", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.params.email });
@@ -136,52 +137,35 @@ app.get("/api/users/:email", async (req, res) => {
   }
 });
 
-// Editar usuario
+
+// ✅ Editar usuario con datos del carro
 app.put("/api/users/:email", async (req, res) => {
   try {
-    const { nombre, apellido, idUniversidad, telefono, password } = req.body;
-
-    // Buscar usuario por email
     const user = await User.findOne({ email: req.params.email });
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
-    // ✅ Sobrescribir los campos con los que llegaron (reemplazar)
-    if (nombre !== undefined) user.nombre = nombre;
-    if (apellido !== undefined) user.apellido = apellido;
-    if (idUniversidad !== undefined) user.idUniversidad = idUniversidad;
-    if (telefono !== undefined) user.telefono = telefono;
+    const campos = ["nombre", "apellido", "idUniversidad", "telefono", "placa", "cupos", "marca", "modelo"];
 
-    // ✅ Si se envía contraseña nueva, encriptarla
-    if (password) {
-      user.password = await bcrypt.hash(password, 10);
-    }
+    campos.forEach(campo => {
+      if (req.body[campo] !== undefined) user[campo] = req.body[campo];
+    });
 
-    // Guardar los cambios en MongoDB
+    if (req.body.password) user.password = await bcrypt.hash(req.body.password, 10);
+
     await user.save();
+    res.json({ message: "Usuario actualizado correctamente", user });
 
-    // Enviar solo los datos seguros al frontend (sin contraseña)
-    const safeUser = {
-      nombre: user.nombre,
-      apellido: user.apellido,
-      email: user.email,
-      idUniversidad: user.idUniversidad,
-      telefono: user.telefono,
-    };
-
-    res.json({ message: "Usuario actualizado correctamente", user: safeUser });
   } catch (error) {
-    console.error("Error al actualizar usuario:", error);
     res.status(500).json({ message: "Error en el servidor" });
   }
 });
+
 // Raíz
 app.get("/", (req, res) => {
-  res.send("✅ Backend funcionando correctamente 🚀");
+  res.send("✅ Backend funcionando 🚀");
 });
 
-// ----------------------------------------------------
-// ✅ 5. Servidor
-// ----------------------------------------------------
+// Servidor
 app.listen(PORT, () =>
   console.log(`✅ Servidor backend corriendo en puerto ${PORT}`)
 );
