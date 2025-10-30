@@ -277,7 +277,7 @@ function HomeDriver() {
     if (storedUser?.trips) setTrips(storedUser.trips);
   }, [activeTab]);
 
-  // ✅ FUNCIÓN ACTUALIZADA → Próximo viaje usando solo trips locales
+  // ✅ FUNCIÓN ACTUALIZADA → Próximo viaje usando trips locales
   const getNextTrip = () => {
     if (!trips.length) return null;
     const now = new Date();
@@ -296,6 +296,19 @@ function HomeDriver() {
     upcomingTrips.sort((a, b) => a.tripDate - b.tripDate);
 
     return upcomingTrips[0];
+  };
+
+  // ✅ NUEVA FUNCIÓN → Eliminar viaje
+  const handleDeleteTrip = (index) => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (!storedUser?.trips) return;
+
+    const updatedTrips = [...storedUser.trips];
+    updatedTrips.splice(index, 1);
+    storedUser.trips = updatedTrips;
+
+    localStorage.setItem("user", JSON.stringify(storedUser));
+    setTrips(updatedTrips);
   };
 
   const handleSubmit = async (e) => {
@@ -325,7 +338,7 @@ function HomeDriver() {
       const updatedUser = { ...storedUser };
       updatedUser.trips = [...(storedUser.trips || []), data];
       localStorage.setItem("user", JSON.stringify(updatedUser));
-      setTrips(updatedUser.trips); // 🔹 actualizar trips inmediatamente
+      setTrips(updatedUser.trips); // actualizar trips inmediatamente
 
       alert("Tramo creado correctamente 🚗");
 
@@ -402,12 +415,31 @@ function HomeDriver() {
                     padding: "15px",
                     borderRadius: "10px",
                     marginBottom: "10px",
-                    boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center"
                   }}>
-                    <p><strong>Desde:</strong> {trip.fromLocation}</p>
-                    <p><strong>Hasta:</strong> {trip.toLocation}</p>
-                    <p><strong>Hora:</strong> {trip.departureTime}</p>
-                    <p><strong>Precio:</strong> ${trip.price}</p>
+                    <div>
+                      <p><strong>Desde:</strong> {trip.fromLocation}</p>
+                      <p><strong>Hasta:</strong> {trip.toLocation}</p>
+                      <p><strong>Hora:</strong> {trip.departureTime}</p>
+                      <p><strong>Precio:</strong> ${trip.price}</p>
+                    </div>
+                    <button 
+                      onClick={() => handleDeleteTrip(index)} 
+                      style={{
+                        backgroundColor: colors.details,
+                        color: colors.white,
+                        border: "none",
+                        padding: "8px 12px",
+                        borderRadius: "8px",
+                        cursor: "pointer",
+                        fontWeight: "600"
+                      }}
+                    >
+                      Borrar
+                    </button>
                   </div>
                 ))
               )}
