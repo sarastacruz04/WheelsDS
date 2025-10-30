@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
   telefono: String,
   password: { type: String, required: true },
 
-  // 🚗 Campos del carro NUEVOS
+  // 🚗 Campos del carro
   placa: { type: String, default: "" },
   cupos: { type: Number, default: 0 },
   marca: { type: String, default: "" },
@@ -53,6 +53,15 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 
+/* ✅ Nueva ruta para verificar placa existente */
+app.get("/api/users/placa/:placa", async (req, res) => {
+  try {
+    const existing = await User.findOne({ placa: req.params.placa });
+    res.json({ exists: !!existing });
+  } catch (err) {
+    res.status(500).json({ message: "Error al verificar la placa" });
+  }
+});
 
 // ✅ Registro
 app.post("/api/users/register", async (req, res) => {
@@ -78,18 +87,17 @@ app.post("/api/users/register", async (req, res) => {
       placa: req.body.placa || "",
       cupos: req.body.cupos || 0,
       marca: req.body.marca || "",
-      modelo: req.body.modelo || ""
+      modelo: req.body.modelo || "",
     });
 
     await nuevoUsuario.save();
     res.status(201).json({ message: "Usuario registrado exitosamente" });
 
   } catch (error) {
-    res.status(500).json({ message: "Error en el servidor" });
     console.error(error);
+    res.status(500).json({ message: "Error en el servidor" });
   }
 });
-
 
 // ✅ Login
 app.post("/api/users/login", async (req, res) => {
@@ -110,8 +118,6 @@ app.post("/api/users/login", async (req, res) => {
         email: user.email,
         idUniversidad: user.idUniversidad,
         telefono: user.telefono,
-
-        // ✅ También enviamos datos del carro en login
         placa: user.placa,
         cupos: user.cupos,
         marca: user.marca,
@@ -125,7 +131,6 @@ app.post("/api/users/login", async (req, res) => {
   }
 });
 
-
 // ✅ Obtener usuario
 app.get("/api/users/:email", async (req, res) => {
   try {
@@ -137,35 +142,44 @@ app.get("/api/users/:email", async (req, res) => {
   }
 });
 
-
-// ✅ Editar usuario con datos del carro
+// ✅ Editar usuario con validación de placa duplicada
 app.put("/api/users/:email", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.params.email });
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
-    const campos = ["nombre", "apellido", "idUniversidad", "telefono", "placa", "cupos", "marca", "modelo"];
+    // 🚫 Verificar placa duplicada de otro usuario
+    if (req.body.placa) {
+      const existingCar = await User.findOne({ placa: req.body.placa });
+      if (existingCar && existingCar.email !== req.params.email) {
+        return res.status(400).json({ message: "La placa ya está registrada por otro usuario." });
+      }
+    }
 
+    const campos = ["nombre", "apellido", "idUniversidad", "telefono", "placa", "cupos", "marca", "modelo"];
     campos.forEach(campo => {
       if (req.body[campo] !== undefined) user[campo] = req.body[campo];
     });
 
-    if (req.body.password) user.password = await bcrypt.hash(req.body.password, 10);
+    if (req.body.password) {
+      user.password = await bcrypt.hash(req.body.password, 10);
+    }
 
     await user.save();
     res.json({ message: "Usuario actualizado correctamente", user });
 
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Error en el servidor" });
   }
 });
 
-// Raíz
+// ✅ Ruta raíz para Render ✅
 app.get("/", (req, res) => {
   res.send("✅ Backend funcionando 🚀");
 });
 
-// Servidor
+// ✅ Servidor activo
 app.listen(PORT, () =>
   console.log(`✅ Servidor backend corriendo en puerto ${PORT}`)
 );
