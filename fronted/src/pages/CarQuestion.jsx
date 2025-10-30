@@ -4,10 +4,9 @@ import Colors from "../assets/Colors";
 import Button from "../components/common/Button";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 
-// ✅ ACTUALIZA esta URL si tu backend cambia en Render
-const API_URL = "https://proyecto5-vs2l.onrender.com/api/users";
-
+// --- Estilos (sin cambios) ---
 const PageWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -24,7 +23,7 @@ const Card = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   min-width: 350px;
   border: 1px solid ${Colors.primary};
 `;
@@ -56,14 +55,12 @@ const CarQuestion = () => {
 
   useEffect(() => {
     const userEmail = localStorage.getItem("userEmail");
-    if (!userEmail) {
-      navigate("/login");
-    }
+    if (!userEmail) navigate("/login");
   }, [navigate]);
 
   const handleNext = async () => {
     if (!answer) {
-      alert("Por favor selecciona una opción.");
+      alert("Selecciona una opción para continuar");
       return;
     }
 
@@ -74,17 +71,25 @@ const CarQuestion = () => {
 
     try {
       const userEmail = localStorage.getItem("userEmail");
-      const res = await axios.get(`${API_URL}/${userEmail}`);
+      const res = await axios.get(`${API_BASE_URL}/users/${userEmail}`);
+      const user = res.data;
 
-      if (res.data.placa && res.data.placa !== "") {
-        navigate("/home-driver"); // ✅ YA TIENE CARRO
+      // ✅ Validamos que todos los campos del carro estén completos
+      const hasCarComplete =
+        user.placa?.trim() &&
+        user.marca?.trim() &&
+        user.modelo?.trim() &&
+        user.cupos > 0;
+
+      if (hasCarComplete) {
+        navigate("/home-driver"); // ✅ Ya tiene carro con toda la info
       } else {
-        navigate("/register-car"); // ✅ NO TIENE CARRO REGISTRADO
+        navigate("/register-car"); // ✅ Le falta completar la info del carro
       }
 
     } catch (error) {
-      console.error("Error al verificar carro:", error);
-      alert("Error revisando la información del usuario");
+      console.error("❌ Error al revisar datos del carro:", error);
+      alert("No se pudo verificar la información del usuario");
     }
   };
 
