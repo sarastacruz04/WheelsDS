@@ -277,11 +277,10 @@ function HomeDriver() {
     if (storedUser?.trips) setTrips(storedUser.trips);
   }, [activeTab]);
 
-  // ✅ FUNCIÓN ACTUALIZADA → Próximo viaje usando trips locales
+  // Próximo viaje
   const getNextTrip = () => {
     if (!trips.length) return null;
     const now = new Date();
-
     const upcomingTrips = trips
       .map(t => {
         const [hours, minutes] = t.departureTime.split(":").map(Number);
@@ -290,15 +289,12 @@ function HomeDriver() {
         return { ...t, tripDate };
       })
       .filter(t => t.tripDate >= now);
-
     if (!upcomingTrips.length) return null;
-
     upcomingTrips.sort((a, b) => a.tripDate - b.tripDate);
-
     return upcomingTrips[0];
   };
 
-  // ✅ NUEVA FUNCIÓN → Eliminar viaje
+  // Eliminar viaje
   const handleDeleteTrip = (index) => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (!storedUser?.trips) return;
@@ -338,7 +334,7 @@ function HomeDriver() {
       const updatedUser = { ...storedUser };
       updatedUser.trips = [...(storedUser.trips || []), data];
       localStorage.setItem("user", JSON.stringify(updatedUser));
-      setTrips(updatedUser.trips); // actualizar trips inmediatamente
+      setTrips(updatedUser.trips);
 
       alert("Tramo creado correctamente 🚗");
 
@@ -429,14 +425,17 @@ function HomeDriver() {
                     <button 
                       onClick={() => handleDeleteTrip(index)} 
                       style={{
-                        backgroundColor: colors.details,
+                        backgroundColor: "#0B3D91", // azul oscuro
                         color: colors.white,
                         border: "none",
                         padding: "8px 12px",
                         borderRadius: "8px",
                         cursor: "pointer",
-                        fontWeight: "600"
+                        fontWeight: "600",
+                        transition: "background-color 0.3s"
                       }}
+                      onMouseEnter={e => e.currentTarget.style.backgroundColor = "#133BA0"}
+                      onMouseLeave={e => e.currentTarget.style.backgroundColor = "#0B3D91"}
                     >
                       Borrar
                     </button>
