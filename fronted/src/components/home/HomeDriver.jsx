@@ -267,7 +267,6 @@ function HomeDriver() {
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
-
     if (storedUser && storedUser.nombre) {
       setUserName(`${storedUser.nombre} ${storedUser.apellido || ""}`);
     }
@@ -275,18 +274,28 @@ function HomeDriver() {
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser?.trips) {
-      setTrips(storedUser.trips);
-    }
-  }, [activeTab]); 
+    if (storedUser?.trips) setTrips(storedUser.trips);
+  }, [activeTab]);
 
-  // ✅ FUNCIÓN AGREGADA → Ordenar y devolver el viaje más próximo
+  // ✅ FUNCIÓN ACTUALIZADA → Próximo viaje usando solo trips locales
   const getNextTrip = () => {
     if (!trips.length) return null;
-    const sortedTrips = [...trips].sort((a, b) =>
-      a.departureTime.localeCompare(b.departureTime)
-    );
-    return sortedTrips[0];
+    const now = new Date();
+
+    const upcomingTrips = trips
+      .map(t => {
+        const [hours, minutes] = t.departureTime.split(":").map(Number);
+        const tripDate = new Date();
+        tripDate.setHours(hours, minutes, 0, 0);
+        return { ...t, tripDate };
+      })
+      .filter(t => t.tripDate >= now);
+
+    if (!upcomingTrips.length) return null;
+
+    upcomingTrips.sort((a, b) => a.tripDate - b.tripDate);
+
+    return upcomingTrips[0];
   };
 
   const handleSubmit = async (e) => {
@@ -316,6 +325,7 @@ function HomeDriver() {
       const updatedUser = { ...storedUser };
       updatedUser.trips = [...(storedUser.trips || []), data];
       localStorage.setItem("user", JSON.stringify(updatedUser));
+      setTrips(updatedUser.trips); // 🔹 actualizar trips inmediatamente
 
       alert("Tramo creado correctamente 🚗");
 
@@ -348,12 +358,8 @@ function HomeDriver() {
               Cambiar a Pasajero
             </SwitchButton>
             <DropdownMenu open={menuOpen}>
-              <DropdownItem onClick={() => navigate('/profile')}>
-                Ver perfil
-              </DropdownItem>
-              <DropdownItem onClick={() => navigate('/edit-profile')}>
-                Editar datos
-              </DropdownItem>
+              <DropdownItem onClick={() => navigate('/profile')}>Ver perfil</DropdownItem>
+              <DropdownItem onClick={() => navigate('/edit-profile')}>Editar datos</DropdownItem>
             </DropdownMenu>
           </ProfileContainer>
         </HeaderContainer>
@@ -377,9 +383,7 @@ function HomeDriver() {
           {activeTab === "home" && (
             <GreetingContainer>
               <GreetingLeft>¡Hola {userName || "Conductor"}! 🚗</GreetingLeft>
-              <CreateButton onClick={() => setShowModal(true)}>
-                + Crear tramo
-              </CreateButton>
+              <CreateButton onClick={() => setShowModal(true)}>+ Crear tramo</CreateButton>
             </GreetingContainer>
           )}
 
@@ -390,9 +394,7 @@ function HomeDriver() {
               </h3>
 
               {trips.length === 0 ? (
-                <p style={{ textAlign: "center", color: colors.text }}>
-                  Aún no has creado viajes 😢
-                </p>
+                <p style={{ textAlign: "center", color: colors.text }}>Aún no has creado viajes 😢</p>
               ) : (
                 trips.map((trip, index) => (
                   <div key={index} style={{ 
@@ -412,10 +414,8 @@ function HomeDriver() {
             </>
           )}
 
-          {/* ✅ SECCIÓN ACTUALIZADA → VIAJE MÁS PRÓXIMO */}
           {activeTab === "current" && (() => {
             const nextTrip = getNextTrip();
-
             return (
               <>
                 <h3 style={{ textAlign: "center", color: colors.text, marginBottom: "20px" }}>
@@ -423,9 +423,7 @@ function HomeDriver() {
                 </h3>
 
                 {!nextTrip ? (
-                  <p style={{ textAlign: "center", color: colors.text }}>
-                    No hay viajes próximos 😢
-                  </p>
+                  <p style={{ textAlign: "center", color: colors.text }}>No hay viajes próximos 😢</p>
                 ) : (
                   <div style={{
                     background: "white",
