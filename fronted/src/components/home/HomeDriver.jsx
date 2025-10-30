@@ -278,7 +278,16 @@ function HomeDriver() {
     if (storedUser?.trips) {
       setTrips(storedUser.trips);
     }
-  }, [activeTab]); // ✅ Recarga al cambiar a "Viajes creados"
+  }, [activeTab]); 
+
+  // ✅ FUNCIÓN AGREGADA → Ordenar y devolver el viaje más próximo
+  const getNextTrip = () => {
+    if (!trips.length) return null;
+    const sortedTrips = [...trips].sort((a, b) =>
+      a.departureTime.localeCompare(b.departureTime)
+    );
+    return sortedTrips[0];
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -304,7 +313,6 @@ function HomeDriver() {
 
       if (!res.ok) throw new Error(data.message || "No se pudo crear el tramo 😢");
 
-      // ✅ Guardamos el nuevo viaje en el usuario local
       const updatedUser = { ...storedUser };
       updatedUser.trips = [...(storedUser.trips || []), data];
       localStorage.setItem("user", JSON.stringify(updatedUser));
@@ -404,11 +412,37 @@ function HomeDriver() {
             </>
           )}
 
-          {activeTab === "current" && (
-            <h3 style={{ textAlign: "center", color: colors.text }}>
-              🛣️ Aquí verás tu viaje en curso.
-            </h3>
-          )}
+          {/* ✅ SECCIÓN ACTUALIZADA → VIAJE MÁS PRÓXIMO */}
+          {activeTab === "current" && (() => {
+            const nextTrip = getNextTrip();
+
+            return (
+              <>
+                <h3 style={{ textAlign: "center", color: colors.text, marginBottom: "20px" }}>
+                  🛣️ Tu viaje más próximo
+                </h3>
+
+                {!nextTrip ? (
+                  <p style={{ textAlign: "center", color: colors.text }}>
+                    No hay viajes próximos 😢
+                  </p>
+                ) : (
+                  <div style={{
+                    background: "white",
+                    padding: "15px",
+                    borderRadius: "10px",
+                    marginBottom: "10px",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
+                  }}>
+                    <p><strong>Desde:</strong> {nextTrip.fromLocation}</p>
+                    <p><strong>Hasta:</strong> {nextTrip.toLocation}</p>
+                    <p><strong>Hora:</strong> {nextTrip.departureTime}</p>
+                    <p><strong>Precio:</strong> ${nextTrip.price}</p>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </ContentWrapper>
       </HomeContainer>
 
