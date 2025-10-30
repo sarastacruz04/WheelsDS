@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import colors from '../../assets/Colors.jsx';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import logo from '../../assets/Logo.png';
 import profilePhoto from '../../assets/ProfilePhoto.png';
 import iconHome from "../../assets/Home.png";
@@ -10,30 +9,260 @@ import iconReservedTravel from "../../assets/ReservedTravel.png";
 import iconCurrentTravel from "../../assets/CurrentTravel.png";
 
 // --- Estilos de la Página ---
-const HomeContainer = styled.div`background-color: ${colors.white}; min-height: 100vh; display: flex; flex-direction: column;`;
-const HeaderContainer = styled.div`display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 20px 40px 0; background-color: ${colors.white}; @media (max-width: 768px) { flex-direction: column; gap: 10px; padding: 20px; }`;
-const ContentWrapper = styled.div`flex-grow: 1; padding: 20px 40px; background-color: #f0f4f7; @media (max-width: 768px) { padding: 20px; padding-bottom: 80px; }`;
-const LeftSection = styled.div`display: flex; align-items: center; gap: 12px;`;
-const Logo = styled.img`height: 45px; cursor: pointer;`;
-const ProfileContainer = styled.div`position: relative; display: flex; align-items: center; gap: 15px;`;
-const ProfileImage = styled.img`width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 2px solid ${colors.details}; transition: transform 0.2s; &:hover { transform: scale(1.05); }`;
-const DropdownMenu = styled.div`position: absolute; top: 50px; right: 0; background: ${colors.white}; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); width: 150px; display: ${({ open }) => (open ? "block" : "none")}; z-index: 10;`;
-const DropdownItem = styled.div`padding: 10px; cursor: pointer; color: ${colors.text}; font-size: 14px; border-bottom: 1px solid #eee; &:hover { background-color: ${colors.background}; } &:last-child { border-bottom: none; }`;
-const SwitchButton = styled.button`background-color: ${colors.primary}; color: ${colors.white}; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: background-color 0.3s; &:hover { background-color: ${colors.details}; }`;
-const NavMenu = styled.div`display: flex; justify-content: center; gap: 30px; margin-bottom: 25px; border-bottom: 2px solid ${colors.details}; padding-bottom: 10px; @media (max-width: 768px) { flex-direction: column; align-items: center; gap: 10px; }`;
-const NavButton = styled.button`background: none; border: none; font-size: 16px; font-weight: ${({ $active }) => ($active ? "700" : "500")}; color: ${({ $active }) => ($active ? colors.primary : colors.text)}; cursor: pointer; position: relative; transition: color 0.3s; &:hover { color: ${colors.primary}; } &::after { content: ""; position: absolute; bottom: -5px; left: 0; right: 0; height: 2px; background-color: ${({ active }) => (active ? colors.primary : "transparent")}; transition: background-color 0.3s; }`;
-const GreetingLeft = styled.h2`color: ${colors.text}; font-weight: 600; margin: 0; white-space: nowrap; font-size: 1.3rem; @media (max-width: 768px) { text-align: center; margin-bottom: 10px; }`;
-const GreetingContainer = styled.div`display: flex; justify-content: space-between; align-items: center; background: ${colors.white}; padding: 15px 25px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); margin-bottom: 20px; @media (max-width: 768px) { flex-direction: column; gap: 10px; text-align: center; }`;
-const CreateButton = styled.button`background-color: ${colors.primary}; color: ${colors.white}; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background-color 0.3s, transform 0.1s; &:hover { background-color: ${colors.details}; transform: scale(1.03); }`;
-const ModalOverlay = styled.div`display: ${({ open }) => (open ? 'flex' : 'none')}; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); justify-content: center; align-items: center; z-index: 1000;`;
-const ModalContent = styled.div`background: ${colors.white}; padding: 30px; border-radius: 12px; width: 400px; max-width: 90%; box-shadow: 0 2px 10px rgba(0,0,0,0.2);`;
-const FormGroup = styled.div`margin-bottom: 15px; display: flex; flex-direction: column;`;
-const Label = styled.label`margin-bottom: 5px; font-weight: 500; color: ${colors.text};`;
-const Input = styled.input`padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; &:focus { outline: none; border-color: ${colors.primary}; }`;
-const SubmitButton = styled.button`background-color: ${colors.primary}; color: ${colors.white}; padding: 12px 20px; border: none; border-radius: 8px; font-weight: 600; width: 100%; cursor: pointer; transition: background-color 0.3s; &:hover { background-color: ${colors.details}; }`;
-const TripCard = styled.div`background: ${colors.white}; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1);`;
+const HomeContainer = styled.div`
+  background-color: ${colors.white};
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+`;
 
-function DriverHome() {
+const HeaderContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 20px 40px 0;
+  background-color: ${colors.white};
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+  }
+`;
+
+const ContentWrapper = styled.div`
+  flex-grow: 1;
+  padding: 20px 40px;
+  background-color: #f0f4f7;
+
+  @media (max-width: 768px) {
+    padding: 20px;
+    padding-bottom: 80px;
+  }
+`;
+
+const LeftSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const Logo = styled.img`
+  height: 45px;
+  cursor: pointer;
+`;
+
+const ProfileContainer = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+`;
+
+const ProfileImage = styled.img`
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid ${colors.details};
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+`;
+
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: ${colors.white};
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+  width: 150px;
+  display: ${({ open }) => (open ? "block" : "none")};
+  z-index: 10;
+`;
+
+const DropdownItem = styled.div`
+  padding: 10px;
+  cursor: pointer;
+  color: ${colors.text};
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
+
+  &:hover {
+    background-color: ${colors.background};
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const SwitchButton = styled.button`
+  background-color: ${colors.primary};
+  color: ${colors.white};
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: ${colors.details};
+  }
+`;
+
+const NavMenu = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 25px;
+  border-bottom: 2px solid ${colors.details};
+  padding-bottom: 10px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+`;
+
+const NavButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: ${({ $active }) => ($active ? "700" : "500")};
+  color: ${({ $active }) => ($active ? colors.primary : colors.text)};
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s;
+
+  &:hover {
+    color: ${colors.primary};
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: ${({ active }) => (active ? colors.primary : "transparent")};
+    transition: background-color 0.3s;
+  }
+`;
+
+const GreetingLeft = styled.h2`
+  color: ${colors.text};
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+  font-size: 1.3rem;
+
+  @media (max-width: 768px) {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+`;
+
+const GreetingContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: ${colors.white};
+  padding: 15px 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+`;
+
+const CreateButton = styled.button`
+  background-color: ${colors.primary};
+  color: ${colors.white};
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s;
+
+  &:hover {
+    background-color: ${colors.details};
+    transform: scale(1.03);
+  }
+`;
+
+const ModalOverlay = styled.div`
+  display: ${({ open }) => (open ? 'flex' : 'none')};
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background: ${colors.white};
+  padding: 30px;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+`;
+
+const FormGroup = styled.div`
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+`;
+
+const Label = styled.label`
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: ${colors.text};
+`;
+
+const Input = styled.input`
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  &:focus {
+    outline: none;
+    border-color: ${colors.primary};
+  }
+`;
+
+const SubmitButton = styled.button`
+  background-color: ${colors.primary};
+  color: ${colors.white};
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: ${colors.details};
+  }
+`;
+
+function HomeDriver() {
   const [userName, setUserName] = useState("Conductor");
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("home");
@@ -42,59 +271,51 @@ function DriverHome() {
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
   const [price, setPrice] = useState('');
-  const [trips, setTrips] = useState([]);
 
   const navigate = useNavigate();
-  const storedUser = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser && storedUser.nombre) {
       setUserName(`${storedUser.nombre} ${storedUser.apellido || ""}`);
-      fetchTrips();
     }
   }, []);
 
-  const fetchTrips = async () => {
-    try {
-      const res = await axios.get(
-        `https://proyecto5-vs2l.onrender.com/api/trips/${storedUser._id}`,
-        { withCredentials: true }
-      );
-      setTrips(res.data.trips);
-    } catch (err) {
-      console.error("Error al obtener trips:", err);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const tripData = { 
-      userId: storedUser._id, 
-      departureTime, 
-      fromLocation, 
-      toLocation, 
-      price: Number(price)
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (!storedUser?._id) return alert("Usuario no encontrado 😢");
+
+    const tripData = {
+      userId: storedUser._id,
+      departureTime,
+      fromLocation,
+      toLocation,
+      price: Number(price),
     };
 
     try {
-      const res = await axios.post(
-        "https://proyecto5-vs2l.onrender.com/api/trips",
-        tripData,
-        { headers: { "Content-Type": "application/json" }, withCredentials: true }
-      );
+      const res = await fetch("https://proyecto5-vs2l.onrender.com/api/trips", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(tripData),
+      });
 
-      setTrips(res.data.trips);
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || "No se pudo crear el tramo 😢");
+
       alert("Tramo creado correctamente 🚗");
 
-      setDepartureTime(''); 
-      setFromLocation(''); 
-      setToLocation(''); 
+      // Limpiar formulario
+      setDepartureTime('');
+      setFromLocation('');
+      setToLocation('');
       setPrice('');
       setShowModal(false);
-
-    } catch (err) {
-      console.error("Error al crear trip:", err);
-      alert("No se pudo crear el tramo 😢");
+    } catch (error) {
+      alert(error.message);
+      console.error(error);
     }
   };
 
@@ -152,20 +373,9 @@ function DriverHome() {
           )}
 
           {activeTab === "reserved" && (
-            <>
-              {trips.length === 0 ? (
-                <h3 style={{ textAlign: "center", color: colors.text }}>📋 No tienes tramos creados</h3>
-              ) : (
-                trips.map((trip, idx) => (
-                  <TripCard key={idx}>
-                    <p>🕒 <b>Hora:</b> {trip.departureTime}</p>
-                    <p>📍 <b>Desde:</b> {trip.fromLocation}</p>
-                    <p>🏁 <b>Hasta:</b> {trip.toLocation}</p>
-                    <p>💰 <b>Precio:</b> ${trip.price}</p>
-                  </TripCard>
-                ))
-              )}
-            </>
+            <h3 style={{ textAlign: "center", color: colors.text }}>
+              📋 Aquí podrás ver los viajes que has creado.
+            </h3>
           )}
 
           {activeTab === "current" && (
@@ -205,4 +415,4 @@ function DriverHome() {
   );
 }
 
-export default DriverHome;
+export default HomeDriver;
