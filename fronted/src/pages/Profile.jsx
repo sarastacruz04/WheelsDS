@@ -75,15 +75,6 @@ const Email = styled.p`
   }
 `;
 
-/* ✅ Caja para datos del vehículo */
-const InfoBox = styled.div`
-  background-color: #eef3f7;
-  padding: 12px;
-  margin-top: 12px;
-  border-radius: 10px;
-  text-align: left;
-`;
-
 const BackButton = styled.button`
   margin-top: 25px;
   background-color: ${colors.primary};
@@ -126,11 +117,8 @@ function Profile() {
       try {
         const email = storedUser?.email;
         if (!email) return;
-        const res = await axios.get(`https://proyecto5-vs2l.onrender.com/api/users/${email}`);
-        if (res.data) {
-          setUser(res.data);
-          localStorage.setItem("user", JSON.stringify(res.data)); // ✅ Se actualiza
-        }
+        const res = await axios.get(`https://proyecto-y2t3.vercel.app/api/users/${email}`);
+        if (res.data) setUser(res.data);
       } catch (err) {
         console.error("Error al obtener datos del usuario:", err);
       }
@@ -147,21 +135,7 @@ function Profile() {
         <Email><strong>Correo:</strong> {user?.email || "Sin correo"}</Email>
         <Email><strong>Rol:</strong> {user?.role || "Pasajero"}</Email>
 
-        {/* ✅ Mostrar datos del vehículo solo si es conductor */}
-        {user?.role === "conductor" && (
-          <InfoBox>
-            <p><strong>🚗 Vehículo:</strong></p>
-            <p><strong>Placa:</strong> {user?.placa || "No registrada"}</p>
-            <p><strong>Marca:</strong> {user?.marca || "No registrada"}</p>
-            <p><strong>Modelo:</strong> {user?.modelo || "No registrado"}</p>
-          </InfoBox>
-        )}
-
-        {/* ✅ Redirección según rol */}
-        <BackButton onClick={() => navigate(user?.role === "conductor" ? "/home-driver" : "/home")}>
-          ← Volver
-        </BackButton>
-
+        <BackButton onClick={() => navigate("/home")}>← Volver</BackButton>
         <LogoutButton
           onClick={() => {
             localStorage.removeItem("user");
