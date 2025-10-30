@@ -3,8 +3,11 @@ import styled from "styled-components";
 import Colors from "../assets/Colors";
 import Button from "../components/common/Button";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-// --- Estilos ---
+// ✅ ACTUALIZA esta URL si tu backend cambia en Render
+const API_URL = "https://proyecto5-vs2l.onrender.com/api/users";
+
 const PageWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -12,10 +15,6 @@ const PageWrapper = styled.div`
   height: 100vh;
   background-color: ${Colors.pageBackground};
   padding: 20px;
-
-  @media (max-width: 768px) {
-    padding: 10px;
-  }
 `;
 
 const Card = styled.div`
@@ -28,16 +27,6 @@ const Card = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   min-width: 350px;
   border: 1px solid ${Colors.primary};
-
-  @media (max-width: 768px) {
-    padding: 30px 20px;
-    width: 100%;
-    min-width: unset;
-  }
-
-  @media (max-width: 480px) {
-    padding: 20px 15px;
-  }
 `;
 
 const Title = styled.h2`
@@ -45,23 +34,12 @@ const Title = styled.h2`
   font-size: 22px;
   margin-bottom: 20px;
   text-align: center;
-
-  @media (max-width: 480px) {
-    font-size: 18px;
-    margin-bottom: 15px;
-  }
 `;
 
 const Options = styled.div`
   display: flex;
   gap: 30px;
   margin-bottom: 25px;
-
-  @media (max-width: 480px) {
-    flex-direction: column;
-    gap: 15px;
-    width: 100%;
-  }
 `;
 
 const OptionLabel = styled.label`
@@ -70,17 +48,12 @@ const OptionLabel = styled.label`
   display: flex;
   align-items: center;
   gap: 5px;
-
-  @media (max-width: 480px) {
-    font-size: 14px;
-  }
 `;
 
 const CarQuestion = () => {
   const [answer, setAnswer] = useState("");
   const navigate = useNavigate();
 
-  // Evita que alguien entre directo a esta ruta sin haberse registrado
   useEffect(() => {
     const userEmail = localStorage.getItem("userEmail");
     if (!userEmail) {
@@ -88,16 +61,30 @@ const CarQuestion = () => {
     }
   }, [navigate]);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!answer) {
-      alert("Por favor selecciona una opción antes de continuar.");
+      alert("Por favor selecciona una opción.");
       return;
     }
 
-    if (answer === "si") {
-      navigate("/register-car"); // Ir a registrar carro
-    } else {
-      navigate("/home"); // Saltar al home si no quiere registrar carro
+    if (answer === "no") {
+      navigate("/home");
+      return;
+    }
+
+    try {
+      const userEmail = localStorage.getItem("userEmail");
+      const res = await axios.get(`${API_URL}/${userEmail}`);
+
+      if (res.data.placa && res.data.placa !== "") {
+        navigate("/home-driver"); // ✅ YA TIENE CARRO
+      } else {
+        navigate("/register-car"); // ✅ NO TIENE CARRO REGISTRADO
+      }
+
+    } catch (error) {
+      console.error("Error al verificar carro:", error);
+      alert("Error revisando la información del usuario");
     }
   };
 
