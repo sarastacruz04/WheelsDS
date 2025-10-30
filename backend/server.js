@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -35,7 +34,7 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ Conectado a MongoDB Atlas"))
   .catch(err => console.error("❌ Error al conectar MongoDB:", err));
 
-// ✅ Schema actualizado con datos del carro
+// ✅ Schema actualizado con datos del carro y trips
 const userSchema = new mongoose.Schema({
   nombre: { type: String, required: true },
   apellido: { type: String, required: true },
@@ -49,6 +48,17 @@ const userSchema = new mongoose.Schema({
   cupos: { type: Number, default: 0 },
   marca: { type: String, default: "" },
   modelo: { type: String, default: "" },
+
+  // ✅ Trips del conductor
+  trips: [
+    {
+      departureTime: { type: String, required: true },
+      fromLocation: { type: String, required: true },
+      toLocation: { type: String, required: true },
+      price: { type: Number, required: true },
+      createdAt: { type: Date, default: Date.now }
+    }
+  ]
 }, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);
@@ -174,7 +184,42 @@ app.put("/api/users/:email", async (req, res) => {
   }
 });
 
-// ✅ Ruta raíz para Render ✅
+// ✅ Crear un trip
+app.post("/api/trips", async (req, res) => {
+  try {
+    const { userId, departureTime, fromLocation, toLocation, price } = req.body;
+
+    if (!userId || !departureTime || !fromLocation || !toLocation || !price) {
+      return res.status(400).json({ message: "Faltan datos del tramo" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    user.trips.push({ departureTime, fromLocation, toLocation, price });
+    await user.save();
+
+    res.status(201).json({ message: "Tramo creado correctamente", trips: user.trips });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error en el servidor" });
+  }
+});
+
+// ✅ Obtener todos los trips de un usuario
+app.get("/api/trips/:userId", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    res.json({ trips: user.trips });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error en el servidor" });
+  }
+});
+
+// ✅ Ruta raíz para Render
 app.get("/", (req, res) => {
   res.send("✅ Backend funcionando 🚀");
 });
