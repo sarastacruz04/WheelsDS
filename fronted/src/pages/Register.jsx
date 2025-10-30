@@ -118,22 +118,21 @@ const Register = () => {
         email: formData.email.trim(),
         telefono: formData.telefono.trim(),
         password: formData.password.trim(),
-        // ✅ Campos del carro inicializados en blanco
         placa: "",
         cupos: 0,
         marca: "",
-        modelo: ""
+        modelo: "",
+        trips: [] // ✅ añadido
       };
 
       const response = await axios.post(
-  "https://proyecto5-vs2l.onrender.com/api/users/register",
-  newUser,
-  { 
-    headers: { "Content-Type": "application/json" },
-    withCredentials: true
-  }
-);
-
+        "https://proyecto5-vs2l.onrender.com/api/users/register",
+        newUser,
+        { 
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true
+        }
+      );
 
       setModalMessage('Registro exitoso');
       setModalDetails(response.data.message || 'Tu cuenta fue creada correctamente.');
@@ -143,7 +142,6 @@ const Register = () => {
 
     } catch (error) {
       console.error("Error en el registro:", error);
-
       let errorMessage = 'Intenta nuevamente más tarde.';
       if (error.response) errorMessage = error.response.data?.message || 'Error en el servidor.';
       else if (error.request) errorMessage = 'No se pudo conectar con el servidor.';

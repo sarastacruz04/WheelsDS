@@ -1,3 +1,4 @@
+// HomeDriver.jsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import colors from '../../assets/Colors.jsx';
@@ -8,7 +9,7 @@ import iconHome from "../../assets/Home.png";
 import iconReservedTravel from "../../assets/ReservedTravel.png";
 import iconCurrentTravel from "../../assets/CurrentTravel.png";
 
-// --- Estilos de la Página ---
+// --- Estilos ---
 const HomeContainer = styled.div`
   background-color: ${colors.white};
   min-height: 100vh;
@@ -144,17 +145,6 @@ const NavButton = styled.button`
 
   &:hover {
     color: ${colors.primary};
-  }
-
-  &::after {
-    content: "";
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background-color: ${({ active }) => (active ? colors.primary : "transparent")};
-    transition: background-color 0.3s;
   }
 `;
 
@@ -305,9 +295,13 @@ function HomeDriver() {
 
       if (!res.ok) throw new Error(data.message || "No se pudo crear el tramo 😢");
 
+      // ✅ Guardamos el nuevo viaje en el usuario local
+      const updatedUser = { ...storedUser };
+      updatedUser.trips = [...(storedUser.trips || []), data];
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
       alert("Tramo creado correctamente 🚗");
 
-      // Limpiar formulario
       setDepartureTime('');
       setFromLocation('');
       setToLocation('');

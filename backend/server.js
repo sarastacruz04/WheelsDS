@@ -1,3 +1,4 @@
+// server.js
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -12,7 +13,7 @@ const PORT = process.env.PORT || 5000;
 // ✅ Configuración CORS
 const allowedOrigins = [
   "https://proyecto9-c03h.onrender.com",
-  "http://localhost:5173"
+  "http://localhost:5173",
 ];
 
 const corsOptions = {
@@ -30,60 +31,66 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // ✅ Conexión MongoDB
-mongoose.connect(process.env.MONGO_URI)
+mongoose
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ Conectado a MongoDB Atlas"))
-  .catch(err => console.error("❌ Error al conectar MongoDB:", err));
+  .catch((err) => console.error("❌ Error al conectar MongoDB:", err));
 
-// ✅ Schema actualizado con datos del carro y trips
-const userSchema = new mongoose.Schema({
-  nombre: { type: String, required: true },
-  apellido: { type: String, required: true },
-  idUniversidad: String,
-  email: { type: String, required: true, unique: true },
-  telefono: String,
-  password: { type: String, required: true },
+// ✅ Schema: Usuario + Carro + Trips
+const userSchema = new mongoose.Schema(
+  {
+    nombre: { type: String, required: true },
+    apellido: { type: String, required: true },
+    idUniversidad: String,
+    email: { type: String, required: true, unique: true },
+    telefono: String,
+    password: { type: String, required: true },
 
-  // 🚗 Campos del carro
-  placa: { type: String, default: "" },
-  cupos: { type: Number, default: 0 },
-  marca: { type: String, default: "" },
-  modelo: { type: String, default: "" },
+    // 🚗 Información del carro
+    placa: { type: String, default: "" },
+    cupos: { type: Number, default: 0 },
+    marca: { type: String, default: "" },
+    modelo: { type: String, default: "" },
 
-  // ✅ Trips del conductor
-  trips: [
-    {
-      departureTime: { type: String, required: true },
-      fromLocation: { type: String, required: true },
-      toLocation: { type: String, required: true },
-      price: { type: Number, required: true },
-      createdAt: { type: Date, default: Date.now }
-    }
-  ]
-}, { timestamps: true });
+    // ✅ Lista de trips del conductor
+    trips: [
+      {
+        departureTime: { type: String, required: true },
+        fromLocation: { type: String, required: true },
+        toLocation: { type: String, required: true },
+        price: { type: Number, required: true },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
 const User = mongoose.model("User", userSchema);
 
-/* ✅ Nueva ruta para verificar placa existente */
+// ✅ Validación de placa
 app.get("/api/users/placa/:placa", async (req, res) => {
   try {
     const existing = await User.findOne({ placa: req.params.placa });
     res.json({ exists: !!existing });
   } catch (err) {
-    res.status(500).json({ message: "Error al verificar la placa" });
+    res.status(500).json({ message: "Error al verificar placa" });
   }
 });
 
 // ✅ Registro
 app.post("/api/users/register", async (req, res) => {
   try {
-    const { nombre, apellido, idUniversidad, email, telefono, password } = req.body;
+    const { nombre, apellido, idUniversidad, email, telefono, password } =
+      req.body;
 
     if (!nombre || !apellido || !email || !password) {
       return res.status(400).json({ message: "Faltan campos obligatorios" });
     }
 
     const existente = await User.findOne({ email });
-    if (existente) return res.status(400).json({ message: "El correo ya está registrado" });
+    if (existente)
+      return res.status(400).json({ message: "El correo ya está registrado" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -98,11 +105,11 @@ app.post("/api/users/register", async (req, res) => {
       cupos: req.body.cupos || 0,
       marca: req.body.marca || "",
       modelo: req.body.modelo || "",
+      trips: [], // ✅ Importante inicializar trips
     });
 
     await nuevoUsuario.save();
     res.status(201).json({ message: "Usuario registrado exitosamente" });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error en el servidor" });
@@ -115,69 +122,55 @@ app.post("/api/users/login", async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
 
-    if (!user) return res.status(401).json({ message: "Correo o contraseña incorrectos" });
+    if (!user)
+      return res.status(401).json({ message: "Correo o contraseña incorrectos" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: "Correo o contraseña incorrectos" });
+    if (!isMatch)
+      return res.status(401).json({ message: "Correo o contraseña incorrectos" });
 
     res.json({
       message: "Login exitoso",
-      user: {
-        nombre: user.nombre,
-        apellido: user.apellido,
-        email: user.email,
-        idUniversidad: user.idUniversidad,
-        telefono: user.telefono,
-        placa: user.placa,
-        cupos: user.cupos,
-        marca: user.marca,
-        modelo: user.modelo,
-      }
+      user,
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error en el servidor" });
   }
 });
 
-// ✅ Obtener usuario
+// ✅ Obtener usuario por email
 app.get("/api/users/:email", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.params.email });
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    if (!user)
+      return res.status(404).json({ message: "Usuario no encontrado" });
     res.json(user);
   } catch (error) {
-    res.status(500).json({ message: "Error en el servidor" });
+    res.status(500).json({ message: "Error en servidor" });
   }
 });
 
-// ✅ Editar usuario con validación de placa duplicada
+// ✅ Editar usuario + Validación de placa duplicada
 app.put("/api/users/:email", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.params.email });
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    if (!user)
+      return res.status(404).json({ message: "Usuario no encontrado" });
 
-    // 🚫 Verificar placa duplicada de otro usuario
     if (req.body.placa) {
       const existingCar = await User.findOne({ placa: req.body.placa });
       if (existingCar && existingCar.email !== req.params.email) {
-        return res.status(400).json({ message: "La placa ya está registrada por otro usuario." });
+        return res
+          .status(400)
+          .json({ message: "La placa ya está registrada por otro usuario" });
       }
     }
 
-    const campos = ["nombre", "apellido", "idUniversidad", "telefono", "placa", "cupos", "marca", "modelo"];
-    campos.forEach(campo => {
-      if (req.body[campo] !== undefined) user[campo] = req.body[campo];
-    });
-
-    if (req.body.password) {
-      user.password = await bcrypt.hash(req.body.password, 10);
-    }
-
+    Object.assign(user, req.body);
     await user.save();
-    res.json({ message: "Usuario actualizado correctamente", user });
 
+    res.json({ message: "Usuario actualizado correctamente", user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error en el servidor" });
@@ -194,15 +187,19 @@ app.post("/api/trips", async (req, res) => {
     }
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    if (!user)
+      return res.status(404).json({ message: "Usuario no encontrado" });
 
     user.trips.push({ departureTime, fromLocation, toLocation, price });
     await user.save();
 
-    res.status(201).json({ message: "Tramo creado correctamente", trips: user.trips });
+    res.status(201).json({
+      message: "Tramo creado correctamente",
+      trips: user.trips,
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error en el servidor" });
+    res.status(500).json({ message: "Error en servidor" });
   }
 });
 
@@ -210,16 +207,17 @@ app.post("/api/trips", async (req, res) => {
 app.get("/api/trips/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    if (!user)
+      return res.status(404).json({ message: "Usuario no encontrado" });
 
     res.json({ trips: user.trips });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error en el servidor" });
+    res.status(500).json({ message: "Error en servidor" });
   }
 });
 
-// ✅ Ruta raíz para Render
+// ✅ Ruta raíz
 app.get("/", (req, res) => {
   res.send("✅ Backend funcionando 🚀");
 });
