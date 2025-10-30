@@ -20,8 +20,6 @@ import NavigationMenu from './components/header/NavigationMenu.jsx';
 import { selectToken } from './features/users/UserSlice.jsx';
 import ReservedTravelTittle from './components/home/ReservedTravelTittle.jsx';
 import CurrentTravel from './components/home/CurrentTravel.jsx';
-// 🔹 NUEVA PÁGINA: Crear tramo
-import CreateTrip from './pages/CreateTrip.jsx';
 
 // 🔹 Importamos la nueva página de perfil
 import Profile from './pages/Profile.jsx';

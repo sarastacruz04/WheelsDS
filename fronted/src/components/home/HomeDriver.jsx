@@ -190,8 +190,8 @@ const GreetingContainer = styled.div`
 `;
 
 const CreateButton = styled.button`
-  background-color: ${colors.primary}; /* 🔵 Azul */
-  color: ${colors.white}; /* ⚪ Blanco */
+  background-color: ${colors.primary};
+  color: ${colors.white};
   border: none;
   padding: 10px 18px;
   border-radius: 8px;
@@ -205,10 +205,75 @@ const CreateButton = styled.button`
   }
 `;
 
+// --- Modal del formulario ---
+const ModalOverlay = styled.div`
+  display: ${({ open }) => (open ? 'flex' : 'none')};
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background: ${colors.white};
+  padding: 30px;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+`;
+
+const FormGroup = styled.div`
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+`;
+
+const Label = styled.label`
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: ${colors.text};
+`;
+
+const Input = styled.input`
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  &:focus {
+    outline: none;
+    border-color: ${colors.primary};
+  }
+`;
+
+const SubmitButton = styled.button`
+  background-color: ${colors.primary};
+  color: ${colors.white};
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: ${colors.details};
+  }
+`;
+
 function DriverHome() {
   const [userName, setUserName] = useState("Conductor");
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("home");
+  const [showModal, setShowModal] = useState(false); // ✅ Modal abierto/cerrado
+  const [departureTime, setDepartureTime] = useState('');
+  const [fromLocation, setFromLocation] = useState('');
+  const [toLocation, setToLocation] = useState('');
+  const [price, setPrice] = useState('');
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -218,71 +283,114 @@ function DriverHome() {
     }
   }, []);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const tripData = { departureTime, fromLocation, toLocation, price };
+    console.log('Datos del tramo:', tripData);
+    alert('Tramo creado correctamente 🚗');
+
+    // Limpiar formulario
+    setDepartureTime(''); 
+    setFromLocation(''); 
+    setToLocation(''); 
+    setPrice('');
+    setShowModal(false);
+  };
+
   return (
-    <HomeContainer>
-      <HeaderContainer>
-        <LeftSection>
-          <Logo src={logo} alt="Campus GO Logo" />
-        </LeftSection>
+    <>
+      <HomeContainer>
+        <HeaderContainer>
+          <LeftSection>
+            <Logo src={logo} alt="Campus GO Logo" />
+          </LeftSection>
 
-        <ProfileContainer>
-          <ProfileImage
-            src={profilePhoto}
-            alt="Foto de perfil"
-            onClick={() => setMenuOpen(!menuOpen)}
-          />
-          <SwitchButton onClick={() => navigate('/home')}>
-            Cambiar a Pasajero
-          </SwitchButton>
-          <DropdownMenu open={menuOpen}>
-            <DropdownItem onClick={() => navigate('/profile')}>
-              Ver perfil
-            </DropdownItem>
-            <DropdownItem onClick={() => navigate('/edit-profile')}>
-              Editar datos
-            </DropdownItem>
-          </DropdownMenu>
-        </ProfileContainer>
-      </HeaderContainer>
+          <ProfileContainer>
+            <ProfileImage
+              src={profilePhoto}
+              alt="Foto de perfil"
+              onClick={() => setMenuOpen(!menuOpen)}
+            />
+            <SwitchButton onClick={() => navigate('/home')}>
+              Cambiar a Pasajero
+            </SwitchButton>
+            <DropdownMenu open={menuOpen}>
+              <DropdownItem onClick={() => navigate('/profile')}>
+                Ver perfil
+              </DropdownItem>
+              <DropdownItem onClick={() => navigate('/edit-profile')}>
+                Editar datos
+              </DropdownItem>
+            </DropdownMenu>
+          </ProfileContainer>
+        </HeaderContainer>
 
-      <NavMenu>
-        <NavButton $active={activeTab === "home"} onClick={() => setActiveTab("home")}>
-          <img src={iconHome} alt="home" style={{ width: "18px", height: "18px", marginRight: "8px" }} />
-          Inicio
-        </NavButton>
-        <NavButton $active={activeTab === "reserved"} onClick={() => setActiveTab("reserved")}>
-          <img src={iconReservedTravel} alt="reserved" style={{ width: "18px", height: "18px", marginRight: "8px" }} />
-          Viajes creados
-        </NavButton>
-        <NavButton $active={activeTab === "current"} onClick={() => setActiveTab("current")}>
-          <img src={iconCurrentTravel} alt="current" style={{ width: "18px", height: "18px", marginRight: "8px" }} />
-          Viaje actual
-        </NavButton>
-      </NavMenu>
+        <NavMenu>
+          <NavButton $active={activeTab === "home"} onClick={() => setActiveTab("home")}>
+            <img src={iconHome} alt="home" style={{ width: "18px", height: "18px", marginRight: "8px" }} />
+            Inicio
+          </NavButton>
+          <NavButton $active={activeTab === "reserved"} onClick={() => setActiveTab("reserved")}>
+            <img src={iconReservedTravel} alt="reserved" style={{ width: "18px", height: "18px", marginRight: "8px" }} />
+            Viajes creados
+          </NavButton>
+          <NavButton $active={activeTab === "current"} onClick={() => setActiveTab("current")}>
+            <img src={iconCurrentTravel} alt="current" style={{ width: "18px", height: "18px", marginRight: "8px" }} />
+            Viaje actual
+          </NavButton>
+        </NavMenu>
 
-      <ContentWrapper>
-        {activeTab === "home" && (
-          <GreetingContainer>
-            <GreetingLeft>¡Hola {userName || "Conductor"}! 🚗</GreetingLeft>
-            <CreateButton onClick={() => navigate('/create-trip')}>
-              + Crear tramo
-            </CreateButton>
-          </GreetingContainer>
-        )}
+        <ContentWrapper>
+          {activeTab === "home" && (
+            <GreetingContainer>
+              <GreetingLeft>¡Hola {userName || "Conductor"}! 🚗</GreetingLeft>
+              <CreateButton onClick={() => setShowModal(true)}>
+                + Crear tramo
+              </CreateButton>
+            </GreetingContainer>
+          )}
 
-        {activeTab === "reserved" && (
-          <h3 style={{ textAlign: "center", color: colors.text }}>
-            📋 Aquí podrás ver los viajes que has creado.
-          </h3>
-        )}
+          {activeTab === "reserved" && (
+            <h3 style={{ textAlign: "center", color: colors.text }}>
+              📋 Aquí podrás ver los viajes que has creado.
+            </h3>
+          )}
 
-        {activeTab === "current" && (
-          <h3 style={{ textAlign: "center", color: colors.text }}>
-            🛣️ Aquí verás tu viaje en curso.
-          </h3>
-        )}
-      </ContentWrapper>
-    </HomeContainer>
+          {activeTab === "current" && (
+            <h3 style={{ textAlign: "center", color: colors.text }}>
+              🛣️ Aquí verás tu viaje en curso.
+            </h3>
+          )}
+        </ContentWrapper>
+      </HomeContainer>
+
+      {/* Modal */}
+      <ModalOverlay open={showModal}>
+        <ModalContent>
+          <h2>Crear nuevo tramo 🚗</h2>
+          <form onSubmit={handleSubmit}>
+            <FormGroup>
+              <Label>Hora de salida</Label>
+              <Input type="time" value={departureTime} onChange={(e) => setDepartureTime(e.target.value)} required />
+            </FormGroup>
+            <FormGroup>
+              <Label>Desde</Label>
+              <Input type="text" value={fromLocation} onChange={(e) => setFromLocation(e.target.value)} required />
+            </FormGroup>
+            <FormGroup>
+              <Label>Hasta</Label>
+              <Input type="text" value={toLocation} onChange={(e) => setToLocation(e.target.value)} required />
+            </FormGroup>
+            <FormGroup>
+              <Label>Precio</Label>
+              <Input type="number" value={price} onChange={(e) => setPrice(e.target.value)} required />
+            </FormGroup>
+            <SubmitButton type="submit">Crear tramo</SubmitButton>
+          </form>
+          <CreateButton onClick={() => setShowModal(false)} style={{ marginTop: '10px', width: '100%' }}>Cerrar</CreateButton>
+        </ModalContent>
+      </ModalOverlay>
+    </>
   );
 }
 
