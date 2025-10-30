@@ -65,10 +65,28 @@ const RegisterCar = () => {
 
   const [userEmail, setUserEmail] = useState("");
 
+  // ✅ NUEVO: Cargar datos del usuario si ya tiene carro registrado
   useEffect(() => {
     const storedEmail = localStorage.getItem("userEmail");
-    if (storedEmail) setUserEmail(storedEmail);
-    else navigate("/login");
+    if (!storedEmail) return navigate("/login");
+
+    setUserEmail(storedEmail);
+
+    const fetchUserData = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/users/${storedEmail}`);
+        const user = res.data;
+
+        if (user.placa) setPlaca(user.placa);
+        if (user.cupos) setCupos(user.cupos);
+        if (user.marca) setMarca(user.marca);
+        if (user.modelo) setModelo(user.modelo);
+      } catch (err) {
+        console.error("❌ Error cargando datos del usuario", err);
+      }
+    };
+
+    fetchUserData();
   }, [navigate]);
 
   const handleSubmit = async (e) => {
