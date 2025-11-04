@@ -1,4 +1,4 @@
-// src/components/common/TripCard.jsx
+// Tarjetas que se ven de viajes creados por defecto
 import React from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

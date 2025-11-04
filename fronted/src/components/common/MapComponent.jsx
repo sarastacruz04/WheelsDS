@@ -24,33 +24,6 @@ const MapComponent = ({ onAddressSelect }) => {
         setAutocomplete(autocompleteInstance);
     };
 
-    // Modificar onPlaceChanged para usar onAddressSelect
-    const onPlaceChanged = () => {
-        if (autocomplete) {
-            const selectedPlace = autocomplete.getPlace();
-            if (selectedPlace.geometry) {
-                const newLocation = {
-                    lat: selectedPlace.geometry.location.lat(),
-                    lng: selectedPlace.geometry.location.lng(),
-                };
-                setCenter(newLocation); 
-                setPlace(selectedPlace); 
-                
-                // ✅ LLAMAR AL CALLBACK PASADO POR PROPS
-                if (onAddressSelect) {
-                    onAddressSelect(selectedPlace.formatted_address); 
-                }
-                
-                console.log("📍 Lugar seleccionado:", selectedPlace.formatted_address);
-            } else {
-                console.error("El lugar seleccionado no tiene información geográfica.");
-            }
-        }
-    };
-
-    if (loadError) return <div>Error al cargar Google Maps. Verifica tu clave de API.</div>;
-    if (!isLoaded) return <div>Cargando Mapa...</div>;
-
     const handleMapClick = useCallback((event) => {
         if (!services.geocoder) return; // Si el geocodificador no está cargado, salir
 
@@ -82,6 +55,29 @@ const MapComponent = ({ onAddressSelect }) => {
         });
     }, [services.geocoder, onAddressSelect]); // Dependencias para useCallback
 
+    // Modificar onPlaceChanged para usar onAddressSelect
+    const onPlaceChanged = () => {
+        if (autocomplete) {
+            const selectedPlace = autocomplete.getPlace();
+            if (selectedPlace.geometry) {
+                const newLocation = {
+                    lat: selectedPlace.geometry.location.lat(),
+                    lng: selectedPlace.geometry.location.lng(),
+                };
+                setCenter(newLocation); 
+                setPlace(selectedPlace); 
+                
+                // ✅ LLAMAR AL CALLBACK PASADO POR PROPS
+                if (onAddressSelect) {
+                    onAddressSelect(selectedPlace.formatted_address); 
+                }
+                
+                console.log("📍 Lugar seleccionado:", selectedPlace.formatted_address);
+            } else {
+                console.error("El lugar seleccionado no tiene información geográfica.");
+            }
+        }
+    };
 
     if (loadError) return <div>Error al cargar Google Maps. Verifica tu clave de API.</div>;
     if (!isLoaded) return <div>Cargando Mapa...</div>;

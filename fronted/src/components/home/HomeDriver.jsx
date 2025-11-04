@@ -8,6 +8,7 @@ import profilePhoto from '../../assets/ProfilePhoto.png';
 import iconHome from "../../assets/Home.png";
 import iconReservedTravel from "../../assets/ReservedTravel.png";
 import iconCurrentTravel from "../../assets/CurrentTravel.png";
+import CreateTrip from '../trips/CreateTrip.jsx';
 
 // --- Estilos ---
 const HomeContainer = styled.div`
@@ -209,8 +210,10 @@ const ModalContent = styled.div`
   background: ${colors.white};
   padding: 30px;
   border-radius: 12px;
-  width: 400px;
-  max-width: 90%;
+  width: 990px; // Aumentar el ancho para que el mapa se vea mejor
+  max-width: 95%;
+  max-height: 95%;
+  overflow-y: auto; //Permite hacer scroll
   box-shadow: 0 2px 10px rgba(0,0,0,0.2);
 `;
 
@@ -307,24 +310,20 @@ function HomeDriver() {
     setTrips(updatedTrips);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (tripData) => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (!storedUser?._id) return alert("Usuario no encontrado 😢");
 
-    const tripData = {
+    const finalTripData = {
+      ...tripData,
       userId: storedUser._id,
-      departureTime,
-      fromLocation,
-      toLocation,
-      price: Number(price),
     };
 
     try {
       const res = await fetch("https://proyecto5-vs2l.onrender.com/api/trips", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(tripData),
+        body: JSON.stringify(finalTripData),
       });
 
       const data = await res.json();
@@ -338,11 +337,8 @@ function HomeDriver() {
 
       alert("Tramo creado correctamente 🚗");
 
-      setDepartureTime('');
-      setFromLocation('');
-      setToLocation('');
-      setPrice('');
       setShowModal(false);
+      
     } catch (error) {
       alert(error.message);
       console.error(error);
@@ -417,10 +413,12 @@ function HomeDriver() {
                     alignItems: "center"
                   }}>
                     <div>
+                      <p><strong>Sector:</strong> {trip.sector}</p>
                       <p><strong>Desde:</strong> {trip.fromLocation}</p>
                       <p><strong>Hasta:</strong> {trip.toLocation}</p>
                       <p><strong>Hora:</strong> {trip.departureTime}</p>
                       <p><strong>Precio:</strong> ${trip.price}</p>
+                      <p><strong>Cupos:</strong> {trip.cupos}</p>
                     </div>
                     <button 
                       onClick={() => handleDeleteTrip(index)} 
@@ -463,10 +461,12 @@ function HomeDriver() {
                     marginBottom: "10px",
                     boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
                   }}>
+                    <p><strong>Sector:</strong> {nextTrip.sector}</p>
                     <p><strong>Desde:</strong> {nextTrip.fromLocation}</p>
                     <p><strong>Hasta:</strong> {nextTrip.toLocation}</p>
                     <p><strong>Hora:</strong> {nextTrip.departureTime}</p>
                     <p><strong>Precio:</strong> ${nextTrip.price}</p>
+                    <p><strong>Cupos:</strong> {nextTrip.cupos}</p>
                   </div>
                 )}
               </>
@@ -477,27 +477,10 @@ function HomeDriver() {
 
       <ModalOverlay open={showModal}>
         <ModalContent>
-          <h2>Crear nuevo tramo 🚗</h2>
-          <form onSubmit={handleSubmit}>
-            <FormGroup>
-              <Label>Hora de salida</Label>
-              <Input type="time" value={departureTime} onChange={(e) => setDepartureTime(e.target.value)} required />
-            </FormGroup>
-            <FormGroup>
-              <Label>Desde</Label>
-              <Input type="text" value={fromLocation} onChange={(e) => setFromLocation(e.target.value)} required />
-            </FormGroup>
-            <FormGroup>
-              <Label>Hasta</Label>
-              <Input type="text" value={toLocation} onChange={(e) => setToLocation(e.target.value)} required />
-            </FormGroup>
-            <FormGroup>
-              <Label>Precio</Label>
-              <Input type="number" value={price} onChange={(e) => setPrice(e.target.value)} required />
-            </FormGroup>
-            <SubmitButton type="submit">Crear tramo</SubmitButton>
-          </form>
-          <CreateButton onClick={() => setShowModal(false)} style={{ marginTop: '10px', width: '100%' }}>Cerrar</CreateButton>
+          <CreateTrip
+          onTripSubmit={handleSubmit} // Le pasamos la función que llama a la API
+          onClose={() => setShowModal(false)} // Le pasamos la función para cerrar
+        />
         </ModalContent>
       </ModalOverlay>
     </>
